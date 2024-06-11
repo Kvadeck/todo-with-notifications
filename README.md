@@ -1,1 +1,1 @@
-# adoperator-test-task
+![alt text](preview.png "Preview")
