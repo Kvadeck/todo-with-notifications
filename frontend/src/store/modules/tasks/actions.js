@@ -1,15 +1,11 @@
 import axios from 'axios'
-import {v4 as uuidv4} from 'uuid';
 
 const url = 'http://localhost'
 
 export default {
     async addTask(context, data) {
 
-        const taskId = uuidv4();
-
         const taskData = {
-            taskId: taskId,
             taskName: data.taskName,
             time: data.time,
             category: data.category,
@@ -21,11 +17,9 @@ export default {
                 `${url}/api/add`,
                 taskData);
 
-            console.log(response, 'response')
-
             context.commit('addTask', {
-                 ...taskData,
-                    task_id: taskId
+                ...taskData,
+                id: response.data.id
             });
 
         } catch (error) {

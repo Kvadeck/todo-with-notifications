@@ -76,9 +76,9 @@ class TasksController extends AbstractController
                     throw new NotFoundHttpException('Expecting mandatory parameters!');
         }
 
-        $this->tasksRepository->saveTask($category, $completed, $taskName, $taskTime);
+        $id = $this->tasksRepository->saveTask($category, $completed, $taskName, $taskTime);
 
-        return new JsonResponse(['status' => 'task added!'], Response::HTTP_CREATED);
+        return new JsonResponse(['id' => $id], Response::HTTP_CREATED);
     }
 
     /**

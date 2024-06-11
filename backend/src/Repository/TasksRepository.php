@@ -43,6 +43,8 @@ class TasksRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($newTask);
         $this->getEntityManager()->flush();
 
+        return $newTask->getId();
+
     }
 
     public function updateTask(Tasks $task, $data)
