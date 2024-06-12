@@ -3,10 +3,10 @@
     <base-dialog :show="!!error" title="An error occurred!" @close="handleError">
       <p>{{ error }}</p>
     </base-dialog>
-    <base-dialog :show="!!handleCompleteDeleting" title="Deleting complete!" @close="handleDeleting">
+    <base-dialog :show="!!deleteCompleted" title="Deleting complete!" @close="handleDelete">
       <p>All selected tasks are removed.</p>
     </base-dialog>
-    <base-dialog :show="!!handleEmptyTasks" title="Nothing to delete!" @close="handleEmpty">
+    <base-dialog :show="!!emptyTasks" title="Nothing to delete!" @close="handleEmpty">
       <p>Please select task to remove.</p>
     </base-dialog>
     <section>
@@ -26,7 +26,7 @@
         <ul v-else-if="hasTasks">
           <task-item @selectTask="selectTask" @removeTask="removeTask" v-for="task in getTasks" :key="task.id"
                      :id="task.id"
-                     :taskDescription="task.taskName" :deadline="task.time"
+                     :taskName="task.taskName" :time="task.time"
                      :category="task.category" :completed="task.completed"></task-item>
         </ul>
         <h3 v-else>No tasks found.</h3>
@@ -49,8 +49,8 @@ export default {
     return {
       isLoading: false,
       error: null,
-      handleCompleteDeleting: null,
-      handleEmptyTasks: null
+      deleteCompleted: null,
+      emptyTasks: null
     }
   },
   computed: {
@@ -76,7 +76,6 @@ export default {
         this.error = error.message
       }
       this.isLoading = false;
-
     },
     async loadTasks(refresh = false) {
       this.isLoading = true;
@@ -106,21 +105,21 @@ export default {
         } catch (error) {
           this.error = error.message
         }
-        this.handleCompleteDeleting = true
         this.isLoading = false;
+        this.deleteCompleted = true
       } else {
-        return this.handleEmptyTasks = true;
+        return this.emptyTasks = true;
       }
 
     },
     handleError() {
       this.error = null;
     },
-    handleDeleting() {
-      this.handleCompleteDeleting = null;
+    handleDelete() {
+      this.deleteCompleted = null;
     },
     handleEmpty() {
-      this.handleEmptyTasks = null;
+      this.emptyTasks = null;
     }
   }
 }

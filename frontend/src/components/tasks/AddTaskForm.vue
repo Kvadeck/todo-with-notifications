@@ -30,7 +30,7 @@
       <div class="form-control" :class="{invalid: !time.isValid}">
         <label for="time">Deadline time:</label>
         <input type="datetime-local" id="time" name="time" v-model="time.val" @blur="clearValidity('time')"/>
-        <p v-if="!time.isValid">Time must not be empty.</p>
+        <p v-if="!time.isValid">You need to select deadline time.</p>
       </div>
 
       <p v-if="!formIsValid">Please fix the above errors and submit again.</p>
@@ -60,7 +60,6 @@ export default {
         isValid: true
       },
       formIsValid: true,
-      completed: false
     }
   },
   methods: {
@@ -75,15 +74,14 @@ export default {
         taskName: this.taskName.val,
         time: this.time.val,
         category: this.category.val,
-        completed: this.completed
+        completed: false
       };
+
       this.$emit('save-data', formData)
 
-
       this.taskName.val = '';
-      this.time.val = null
+      this.time.val = ''
       this.category.val = []
-
 
     },
     validateForm() {
@@ -94,7 +92,7 @@ export default {
         this.formIsValid = false;
       }
 
-      if (!this.time.val) {
+      if (this.time.val === '') {
         this.time.isValid = false;
         this.formIsValid = false;
       }

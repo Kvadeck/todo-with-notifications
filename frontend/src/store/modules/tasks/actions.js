@@ -81,10 +81,6 @@ export default {
         try {
             const getSelectedTasks = context.getters.getSelectedTasks;
 
-            if (getSelectedTasks.length === 0) {
-                return;
-            }
-
             const deleteIds = getSelectedTasks.map(id => {
                 const urls = `${url}/api/delete/${id}`;
                 return axios.delete(urls);

@@ -1,11 +1,11 @@
 <template>
   <li>
     <div class="item-header">
-      <h3 :class="{marked: completed}">{{ taskDescription }}</h3>
+      <h3 :class="{marked: completed}">{{ taskName }}</h3>
       <input :value="id" class="item-checkbox" @change="toggleSelection" type="checkbox">
     </div>
 
-    <h4 :class="{marked: completed}">{{ deadlineFormatted }}</h4>
+    <h4 :class="{marked: completed}">{{ timeFormatted }}</h4>
     <div>
       <base-badge v-for="item in category" :key="item" :type="item" :title="item"></base-badge>
     </div>
@@ -23,10 +23,10 @@ import BaseBadge from "@/components/ui/BaseBadge.vue";
 
 export default {
   components: {BaseBadge, BaseButton},
-  props: ['id', 'taskDescription', 'deadline', 'category', 'completed'],
+  props: ['id', 'taskName', 'time', 'category', 'completed'],
   computed: {
-    deadlineFormatted() {
-      return this.deadline.replace('T', ' ')
+    timeFormatted() {
+      return this.time.replace('T', ' ')
     }
   },
   data() {
@@ -38,18 +38,14 @@ export default {
     async markTask() {
       try {
         await this.$store.dispatch('tasks/markTask', {
-          id: this.id,
-          taskDescription: this.taskDescription,
-          deadline: this.deadline,
-          category: this.category,
-          completed: this.completed
+          ...this.$props
         });
       } catch (error) {
         this.error = error.message || 'Something went wrong!'
       }
     },
-    toggleSelection(event) {
-      if (event.target.checked) {
+    toggleSelection({target}) {
+      if (target.checked) {
         this.$emit('selectTask', this.id);
       } else {
         this.$emit('removeTask', this.id);

@@ -1,5 +1,6 @@
 <template>
   <the-header></the-header>
+  <base-notification/>
   <router-view v-slot="slotProps">
     <transition name="route" mode="out-in">
       <component :is="slotProps.Component" ></component>
@@ -9,10 +10,13 @@
 
 <script>
 import TheHeader from "@/components/layout/TheHeader.vue";
+import BaseNotification from "@/components/ui/BaseNotification.vue";
+
 
 export default {
   components: {
-    TheHeader
+    TheHeader,
+    BaseNotification
   },
   created() {},
   computed: {},
