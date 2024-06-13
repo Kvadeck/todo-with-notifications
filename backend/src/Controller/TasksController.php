@@ -2,23 +2,30 @@
 
 namespace App\Controller;
 
+use App\Message\SendSocketMessage;
 use App\Repository\TasksRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
-
+use GuzzleHttp\Client;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/api', name: 'api_')]
 class TasksController extends AbstractController
 {
     private $tasksRepository;
+    private $bus;
+    private $client;
 
-    public function __construct(TasksRepository $tasksRepository)
+    public function __construct(TasksRepository $tasksRepository, MessageBusInterface $bus, HttpClientInterface $client)
     {
         $this->tasksRepository = $tasksRepository;
+        $this->bus = $bus;
+        $this->client = $client;
     }
 
     /**
@@ -39,7 +46,23 @@ class TasksController extends AbstractController
             ];
         }
 
+        //         $this->bus->dispatch(new SendSocketMessage($data));
+
         return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/trigger-notification", name="trigger_notification", methods={"POST"})
+     */
+    public function triggerNotification(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $this->client->request('POST', 'http://127.0.0.1:3000/emit', [
+                    'json' => $data,
+        ]);
+
+        return new JsonResponse(['status' => 'Message dispatched']);
     }
 
     /**

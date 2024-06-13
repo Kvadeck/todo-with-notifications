@@ -6,10 +6,11 @@ const cors = require('cors');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: {}
+    cors: {
+        origin: "*"
+    }
 });
 
-app.use(cors());
 app.use(express.json());
 
 io.on('connection', (socket) => {
@@ -17,6 +18,10 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
     });
+});
+
+app.get('/', (req, res) => {
+    res.send('/');
 });
 
 app.post('/emit', (req, res) => {

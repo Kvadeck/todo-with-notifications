@@ -1,6 +1,6 @@
 <template>
   <div v-if="show" class="notification-popup">
-    <p>{{ notification.message }}</p>
+    <p>{{ notification }}</p>
     <button @click="close">Close</button>
   </div>
 </template>
