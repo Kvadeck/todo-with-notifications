@@ -40,11 +40,24 @@ services:
             - symfony_app
         env_file:
             - .env.nginx.local
-
+    node:
+        build:
+            context: ./node
+            dockerfile: Dockerfile
+        ports:
+            - 3000:3000
+        environment:
+            - NODE_ENV=development
+        volumes:
+            - ./node:/usr/src/app
+            - /usr/src/app/node_modules
+        networks:
+            - symfony_app
 volumes:
     symfony_app_var:
     symfony_app_vendor:
     db_app:
+    node:
 
 networks:
     symfony_app:

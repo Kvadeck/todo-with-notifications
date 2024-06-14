@@ -20,6 +20,8 @@ It is composed by 4 containers:
 
 5. Use the following value for the DATABASE_URL environment variable:
 
+6. Go to backend/.docker/node folder and initial npm i install because this command don't work in Dockerfile
+
 ```
 DATABASE_URL=mysql://app_user:helloworld@db:3306/app_db?serverVersion=8.0.33
 ```
