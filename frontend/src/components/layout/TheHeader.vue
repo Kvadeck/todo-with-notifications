@@ -4,7 +4,7 @@
       <h1>
         <router-link to="/">
           <header-icon></header-icon>
-          <span>To-Do List</span>
+          <span>To-Do</span>
         </router-link>
       </h1>
     </nav>

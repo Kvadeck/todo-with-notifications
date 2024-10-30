@@ -65,7 +65,7 @@ export default {
     }
   },
   created() {
-    this.loadTasks();
+    // this.loadTasks();
   },
   methods: {
     async saveData(data) {
