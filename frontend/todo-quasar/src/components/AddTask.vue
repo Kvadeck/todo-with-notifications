@@ -44,14 +44,14 @@ export default {
 };
 </script>
 <template>
-  <div class="q-pa-md row items-start">
+  <div class="q-px-sm row items-start">
     <q-card class="form-card">
       <q-card-section>
         <div class="text-h6 q-pb-md">Write your task:</div>
         <q-form @submit="onSubmit" @reset="onReset">
           <q-input
             outlined
-            label="Decide what it is you want"
+            label="Decide what it is you planing to do"
             v-model="name"
             lazy-rules
             :rules="[
@@ -111,6 +111,4 @@ export default {
 <style lang="sass" scoped>
 .form-card
   width: 100%
-  max-width: 40rem
-  margin: 2rem auto
 </style>
