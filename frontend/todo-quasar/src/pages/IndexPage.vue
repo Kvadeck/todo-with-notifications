@@ -5,7 +5,7 @@
         <add-task />
       </div>
       <div class="col-12 col-sm-7 col-md-7 col-lg-4">
-        <tasks-card/>
+        <tasks-card />
       </div>
     </div>
   </q-page>
