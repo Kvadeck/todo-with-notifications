@@ -1,41 +1,45 @@
-<!-- Поставить их в один ряд с отступом. -->
-<!-- Разделить время и дату на два инпута. -->
-<!-- Ставить время по умолчанию или заставлять ставить время принудительно? -->
-<!-- Чтобы дата и время были выбраны и дата была в будущем! -->
-<!-- Что делать если стоит дата но не стоит время? -->
-<!-- С пустым временем нельзя и время должно быть в будущем! -->
-<!-- Поставить стартовое время текущем временем! -->
-
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { ref } from 'vue';
+import { errorMessage, nowDateOrTime, successMessage } from 'src/utils/main';
 const $q = useQuasar();
 
 const task_name = ref(null);
 const category = ref(['life']);
-const date = ref('2019-02-01');
-const time = ref('12:44');
+
+const date = ref(nowDateOrTime('date'));
+const time = ref(nowDateOrTime('time'));
 
 function onSubmit() {
+  if (date.value && time.value) {
+    const selectedDateTime = new Date(`${date.value}T${time.value}:00`);
+    const now = new Date();
+
+    if (selectedDateTime < now) {
+      $q.notify(
+        errorMessage('You need to selected date and time is in the future.')
+      );
+      return;
+    }
+  }
+
   if (!category.value.length) {
-    $q.notify({
-      color: 'red-5',
-      textColor: 'white',
-      icon: 'warning',
-      message: 'You need to select at least one category',
-    });
+    $q.notify(errorMessage('You need to select at least one category.'));
+  } else if (!time.value || !date.value) {
+    $q.notify(errorMessage('Date or time is not selected.'));
   } else {
-    $q.notify({
-      color: 'green-4',
-      textColor: 'white',
-      icon: 'cloud_done',
-      message: 'Yor task added successfully',
-    });
+    $q.notify(successMessage('Yor task added successfully'));
+
+    task_name.value = null;
+    date.value = '';
+    time.value = '';
   }
 }
 
 function onReset() {
   task_name.value = null;
+  date.value = nowDateOrTime('date');
+  time.value = nowDateOrTime('time');
 }
 </script>
 <template>
