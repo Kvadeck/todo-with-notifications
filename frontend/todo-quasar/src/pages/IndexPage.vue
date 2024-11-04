@@ -12,8 +12,8 @@
 </template>
 
 <script setup lang="ts">
-import AddTask from 'components/AddTask.vue';
-import TasksCard from 'components/TasksCard.vue';
+import AddTask from 'components/TheAddTask.vue';
+import TasksCard from 'components/TheTasksCard.vue';
 
 defineOptions({
   name: 'IndexPage',
