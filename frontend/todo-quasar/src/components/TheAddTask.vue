@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { errorMessage, nowDateOrTime, successMessage } from 'src/utils/main';
+import { useTasksStore } from 'stores/tasks';
 const $q = useQuasar();
 
-const task_name = ref(null);
+const task_name = ref('');
 const category = ref(['life']);
-
 const date = ref(nowDateOrTime('date'));
 const time = ref(nowDateOrTime('time'));
+
+const store = useTasksStore();
+
+const error = computed(() => store.error);
+const status = computed(() => store.status);
 
 function onSubmit() {
   if (date.value && time.value) {
@@ -28,16 +33,31 @@ function onSubmit() {
   } else if (!time.value || !date.value) {
     $q.notify(errorMessage('Date or time is not selected.'));
   } else {
-    $q.notify(successMessage('Yor task added successfully'));
+    // Back to initial state after submit
+    store.reset();
 
-    task_name.value = null;
+    store
+      .addTask({
+        taskName: task_name.value,
+        category: JSON.stringify(category.value),
+        date: new Date(`${date.value}T${time.value}:00`),
+      })
+      .then(() => {
+        if (error.value) {
+          $q.notify(errorMessage(error.value));
+        } else {
+          $q.notify(successMessage(status.value));
+        }
+      });
+
+    task_name.value = '';
     date.value = '';
     time.value = '';
   }
 }
 
 function onReset() {
-  task_name.value = null;
+  task_name.value = '';
   date.value = nowDateOrTime('date');
   time.value = nowDateOrTime('time');
 }

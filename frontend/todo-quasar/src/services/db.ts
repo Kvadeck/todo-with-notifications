@@ -1,22 +1,19 @@
 import Dexie, { type EntityTable } from 'dexie';
 
 interface Task {
-  id: number;
+  id?: number;
   taskName: string;
-  date: string;
+  date: Date;
   category: string;
-  completed: boolean;
+  completed?: boolean;
 }
 
 const db = new Dexie('TasksDb') as Dexie & {
-  friends: EntityTable<
-    Task,
-    'id'
-  >;
+  tasks: EntityTable<Task, 'id'>;
 };
 
 db.version(1).stores({
-  tasks: '++id, taskName, date, category, completed'
+  tasks: '++id, taskName, date, category, completed',
 });
 
 export type { Task };
