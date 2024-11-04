@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
-import { db, Task } from '../services/db';
+import {defineStore} from 'pinia';
+import {db, Task} from '../services/db';
 
 export const useTasksStore = defineStore('tasks', {
   state: () => ({
@@ -14,6 +14,13 @@ export const useTasksStore = defineStore('tasks', {
         this.status = `Task with id:${id} successfully added.`;
       } catch (error) {
         this.error = `Failed to add task! Error: ${error}`;
+      }
+    },
+    async loadTasks() {
+      try {
+        return await db.tasks.toArray();
+      } catch (error) {
+        this.error = `Failed to load tasks! Error: ${error}`;
       }
     },
     reset() {
