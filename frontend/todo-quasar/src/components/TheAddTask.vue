@@ -58,6 +58,7 @@ function onSubmit() {
 
 function onReset() {
   task_name.value = '';
+  category.value =['life'];
   date.value = nowDateOrTime('date');
   time.value = nowDateOrTime('time');
 }

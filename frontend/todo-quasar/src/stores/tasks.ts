@@ -1,10 +1,12 @@
-import {defineStore} from 'pinia';
-import {db, Task} from '../services/db';
+import { defineStore } from 'pinia';
+import { db, Task } from '../services/db';
 
 export const useTasksStore = defineStore('tasks', {
   state: () => ({
     status: '',
     error: '',
+    isLoading: false,
+    tasks: [] as Task[],
   }),
   getters: {},
   actions: {
@@ -18,9 +20,12 @@ export const useTasksStore = defineStore('tasks', {
     },
     async loadTasks() {
       try {
-        return await db.tasks.toArray();
+        this.isLoading = true;
+        this.tasks = await db.tasks.toArray();
       } catch (error) {
         this.error = `Failed to load tasks! Error: ${error}`;
+      } finally {
+        this.isLoading = false;
       }
     },
     reset() {
