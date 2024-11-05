@@ -47,6 +47,7 @@ function onSubmit() {
           $q.notify(errorMessage(error.value));
         } else {
           $q.notify(successMessage(status.value));
+          store.loadTasks();
         }
       });
 
@@ -58,7 +59,7 @@ function onSubmit() {
 
 function onReset() {
   task_name.value = '';
-  category.value =['life'];
+  category.value = ['life'];
   date.value = nowDateOrTime('date');
   time.value = nowDateOrTime('time');
 }

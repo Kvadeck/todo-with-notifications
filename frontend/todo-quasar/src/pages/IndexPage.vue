@@ -13,18 +13,12 @@
       <div class="col-12 col-md-5 col-lg-4">
         <div class="q-px-sm q-mt-lg q-mt-md-none">
           <tasks-controls />
-          <div class="side-wrapper relative-position full-width" v-if="error">
-
-          </div>
-          <div v-else-if="isLoading"
+          <error-block v-if="error" icon="error" :text="error" />
+          <div
+            v-else-if="isLoading"
             class="side-wrapper relative-position full-width"
           >
-            <q-inner-loading
-              :showing="true"
-              label="Please wait..."
-              label-class="text-teal"
-              label-style="font-size: 1.1em"
-            />
+            <spinner />
           </div>
           <template v-else>
             <transition
@@ -36,13 +30,7 @@
               <div v-if="tasks?.length">
                 <task-card v-for="task in tasks" :key="task.id" :task="task" />
               </div>
-              <div
-                class="side-wrapper text-h6 justify-center relative-position"
-                v-else
-              >
-                <q-icon name="today" />
-                No tasks found...
-              </div>
+              <error-block icon="today" text="No tasks found..." v-else />
             </transition>
           </template>
         </div>
@@ -52,17 +40,19 @@
 </template>
 
 <script setup lang="ts">
-import AddTask from 'components/TheAddTask.vue';
-import TasksControls from 'components/TheTasksControls.vue';
-import TaskCard from 'components/TaskCard.vue';
+import AddTask from 'components/TheAddTaskForm.vue';
+import TasksControls from 'components/TheTasksTopPanel.vue';
+import TaskCard from 'components/TaskItem.vue';
 import { computed, onMounted } from 'vue';
 
 import { useTasksStore } from 'stores/tasks';
+import ErrorBlock from 'components/ui/ErrorBlock.vue';
+import Spinner from 'components/ui/LSpinner.vue';
 const store = useTasksStore();
 
-const error = computed(() => store.error);
-const isLoading = computed(() => store.isLoading);
-const tasks = computed(() => store.tasks);
+const error = computed(() => store.error),
+      isLoading = computed(() => store.isLoading),
+      tasks = computed(() => store.tasks);
 
 async function loadTasks() {
   await store.loadTasks();
@@ -76,16 +66,3 @@ defineOptions({
   name: 'IndexPage',
 });
 </script>
-
-<style scoped>
-.side-wrapper {
-  background: rgba(255, 255, 255, 0.6);
-  min-height: 200px;
-  display: flex;
-  justify-content: center;
-  flex-flow: column;
-  align-items: center;
-  margin: 0;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-}
-</style>

@@ -13,9 +13,9 @@ export const useTasksStore = defineStore('tasks', {
     async addTask(data: Task) {
       try {
         const id = await db.tasks.add({ ...data, completed: false });
-        this.status = `Task with id:${id} successfully added.`;
+        this.status = `Task with ID:${id} successfully added.`;
       } catch (error) {
-        this.error = `Failed to add task! Error: ${error}`;
+        this.error = `Failed to add task! ${error}`;
       }
     },
     async loadTasks() {
@@ -23,7 +23,7 @@ export const useTasksStore = defineStore('tasks', {
         this.isLoading = true;
         this.tasks = await db.tasks.toArray();
       } catch (error) {
-        this.error = `Failed to load tasks! Error: ${error}`;
+        this.error = `Failed to load tasks! ${error}`;
       } finally {
         this.isLoading = false;
       }
