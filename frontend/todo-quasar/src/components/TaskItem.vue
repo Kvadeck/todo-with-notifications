@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { Task } from 'src/services/db';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useTasksStore } from 'stores/tasks';
+import { errorMessage, successMessage } from 'src/utils/main';
+import { useQuasar } from 'quasar';
+const store = useTasksStore();
+const $q = useQuasar();
 
 interface Props {
   task: Task;
@@ -12,11 +17,22 @@ const colors: Record<string, string> = {
   family: 'cyan',
 };
 
-const completed = ref(false);
+const checked = ref(false);
 
-// const emit = defineEmits<{
-//   (e: 'setId', id: number): void
-// }>()
+const error = computed(() => store.error);
+const status = computed(() => store.status);
+
+function deleteTask(id: number | undefined) {
+  store.reset();
+  store.deleteTask(id).then(() => {
+    if (error.value) {
+      $q.notify(errorMessage(error.value));
+    } else {
+      $q.notify(successMessage(status.value));
+      store.loadTasks();
+    }
+  });
+}
 
 defineProps<Props>();
 </script>
@@ -26,7 +42,7 @@ defineProps<Props>();
     <q-card flat bordered class="bg-grey-2">
       <q-card-section>
         <div class="task-card-inner">
-          <q-checkbox size="sm" v-model="completed" />
+          <q-checkbox @change="store.addSelectedTask(task.id)"  size="sm" />
           <div class="row items-center no-wrap">
             <div class="col">
               <div class="text-h6 flex">{{ task.taskName }}</div>
@@ -38,7 +54,7 @@ defineProps<Props>();
                     <q-item clickable>
                       <q-item-section>Mark as completed</q-item-section>
                     </q-item>
-                    <q-item clickable>
+                    <q-item @click="deleteTask(task.id)" clickable>
                       <q-item-section>Remove Card</q-item-section>
                     </q-item>
                   </q-list>

@@ -3,7 +3,6 @@ interface Props {
   text: string;
   icon: string;
 }
-
 defineProps<Props>();
 </script>
 

@@ -23,10 +23,6 @@
   </svg>
 </template>
 
-<script>
-export default {};
-</script>
-
 <style scoped>
 svg {
   width: 32px;

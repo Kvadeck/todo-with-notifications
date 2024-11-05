@@ -3,6 +3,7 @@
 <!-- Добавить возможность темный темы -->
 <!-- Добавить интернационализацию -->
 <!-- После добавление задачи обновлять список задач -->
+<!-- Задача автоматически ставится выполненой при истечение срока выполнения -->
 
 <template>
   <q-page>
@@ -51,8 +52,8 @@ import Spinner from 'components/ui/LSpinner.vue';
 const store = useTasksStore();
 
 const error = computed(() => store.error),
-      isLoading = computed(() => store.isLoading),
-      tasks = computed(() => store.tasks);
+  isLoading = computed(() => store.isLoading),
+  tasks = computed(() => store.tasks);
 
 async function loadTasks() {
   await store.loadTasks();
