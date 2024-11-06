@@ -1,8 +1,11 @@
 import { defineStore } from 'pinia';
 
 import { Task, db } from '../services/db';
+import { StatusMessage } from 'src/models/statusMessage';
+import { ErrorMessage } from 'src/models/errorMessage';
 
 // TODO: Move errors messages to enum
+
 export const useTasksStore = defineStore('tasks', {
   state: () => ({
     status: '',
@@ -16,9 +19,9 @@ export const useTasksStore = defineStore('tasks', {
     async addTask(data: Task) {
       try {
         const id = await db.tasks.add({ ...data, completed: false });
-        this.status = `Task with ID:${id} successfully added.`;
+        this.status = StatusMessage.taskAdded + id;
       } catch (error) {
-        this.error = `Failed to add task! ${error}`;
+        this.error = ErrorMessage.failedAdd + ' ' + error;
       }
     },
     async loadTasks() {
@@ -26,7 +29,7 @@ export const useTasksStore = defineStore('tasks', {
         this.isLoading = true;
         this.tasks = await db.tasks.toArray();
       } catch (error) {
-        this.error = `Failed to load tasks! ${error}`;
+        this.error = ErrorMessage.failedLoad + ' ' + error;
       } finally {
         this.isLoading = false;
       }
@@ -34,9 +37,9 @@ export const useTasksStore = defineStore('tasks', {
     async deleteTask(id: number | undefined) {
       try {
         await db.tasks.delete(id);
-        this.status = `Task with ID:${id} successfully deleted.`;
+        this.status = StatusMessage.taskDeleted + id;
       } catch (error) {
-        this.error = `Failed to delete task! ${error}`;
+        this.error = ErrorMessage.failedDelete + ' ' + error;
       }
     },
     async deleteSelectedTasks(tasksIds: number[]) {
@@ -44,15 +47,23 @@ export const useTasksStore = defineStore('tasks', {
         for (const item of tasksIds) {
           await db.tasks.delete(item);
         }
-        this.status = 'Selected tasks successfully deleted.';
+        this.status = StatusMessage.selectedDeleted;
       } catch (error) {
-        this.error = `Failed to delete selected tasks! ${error}`;
+        this.error = ErrorMessage.failedDeleteSelected + ' ' + error;
       }
     },
     async toggleCompleted(id: number | undefined) {
       if (id === undefined) {
-        this.error = 'Failed to set completed to selected task!';
+        this.error = ErrorMessage.failedSetCompleted;
         return;
+      }
+      try {
+        const task = await db.tasks.get(id);
+        const updated = { completed: !task?.completed };
+        await db.tasks.update(id, updated);
+        this.status = StatusMessage.taskUpdated;
+      } catch (error) {
+        this.error = ErrorMessage.failedSetCompleted + ' ' + error;
       }
     },
     reset() {
@@ -61,7 +72,7 @@ export const useTasksStore = defineStore('tasks', {
     },
     addSelectedTask(id: number | undefined) {
       if (id === undefined) {
-        this.error = 'Failed to add selected task!';
+        this.error = ErrorMessage.failedAddSelected;
         return;
       }
       if (this.selectedTasks.includes(id)) {
@@ -69,6 +80,9 @@ export const useTasksStore = defineStore('tasks', {
       } else {
         this.selectedTasks.push(id);
       }
+    },
+    resetSelectedTasks() {
+      this.selectedTasks = [];
     },
   },
 });

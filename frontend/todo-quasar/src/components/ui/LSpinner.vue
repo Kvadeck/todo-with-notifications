@@ -1,8 +1,11 @@
 <script setup lang="ts">
 interface Props {
-  label: string;
+  label?: string;
 }
-defineProps<Props>();
+
+withDefaults(defineProps<Props>(), {
+  label: 'Please wait...',
+});
 </script>
 
 <template>

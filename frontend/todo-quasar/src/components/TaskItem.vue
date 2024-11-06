@@ -11,22 +11,18 @@ interface Props {
   task: Task;
 }
 
-const props = defineProps<Props>();
-
-const colors: Record<string, string> = {
-  life: 'orange',
-  work: 'red',
-  family: 'cyan',
-};
-
-const checked = ref(false);
-
-const error = computed(() => store.error);
-const status = computed(() => store.status);
-
-const markedText = computed(() => {
-  return props.task.completed ? 'uncompleted' : 'completed';
-});
+const props = defineProps<Props>(),
+  colors: Record<string, string> = {
+    life: 'orange',
+    work: 'red',
+    family: 'cyan',
+  },
+  checked = ref(false),
+  error = computed(() => store.error),
+  status = computed(() => store.status),
+  markedText = computed(() => {
+    return props.task.completed ? 'uncompleted' : 'completed';
+  });
 
 function deleteTask(id: number | undefined) {
   store.reset();
@@ -43,7 +39,6 @@ function deleteTask(id: number | undefined) {
 function toggleCompleted(id: number | undefined) {
   store.reset();
   store.toggleCompleted(id).then(() => {
-    // TODO: This is duplicate and need to move in composable
     if (error.value) {
       $q.notify(errorMessage(error.value));
     } else {

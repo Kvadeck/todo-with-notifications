@@ -14,7 +14,7 @@
         <div class="q-px-sm q-mt-lg q-mt-md-none">
           <tasks-controls />
           <error-block v-if="error" icon="error" :text="error" />
-          <spinner v-else-if="isLoading" label="Please wait..." />
+          <spinner v-else-if="isLoading" />
           <template v-else>
             <div class="row q-col-gutter-sm" v-if="tasks?.length">
               <task-card v-for="task in tasks" :key="task.id" :task="task" />

@@ -3,19 +3,19 @@ import { useTasksStore } from 'stores/tasks';
 import { useQuasar } from 'quasar';
 import { computed } from 'vue';
 import { errorMessage, successMessage } from 'src/utils/main';
+import { ErrorMessage } from 'src/models/errorMessage';
 
-const store = useTasksStore();
-const $q = useQuasar();
-
-const error = computed(() => store.error);
-const status = computed(() => store.status);
-const selected = computed(() => store.selectedTasks);
+const store = useTasksStore(),
+  $q = useQuasar(),
+  error = computed(() => store.error),
+  status = computed(() => store.status),
+  selected = computed(() => store.selectedTasks);
 
 function deleteSelectedTasks() {
   store.reset();
 
   if (!selected.value.length) {
-    $q.notify(errorMessage('You need to select at least one task.'));
+    $q.notify(errorMessage(ErrorMessage.selectOneTask));
     return;
   }
 
@@ -24,9 +24,17 @@ function deleteSelectedTasks() {
       $q.notify(errorMessage(error.value));
     } else {
       $q.notify(successMessage(status.value));
+
+      // Reset selected tasks array after deletion
+      store.resetSelectedTasks();
       store.loadTasks();
     }
   });
+}
+
+function refreshTasks() {
+  store.reset();
+  store.loadTasks();
 }
 </script>
 
@@ -35,7 +43,7 @@ function deleteSelectedTasks() {
     <q-card-section>
       <div class="flex justify-between q-mb-sm">
         <q-btn
-          @click="store.loadTasks"
+          @click="refreshTasks"
           outline
           rounded
           label="Refresh"
@@ -52,5 +60,3 @@ function deleteSelectedTasks() {
     </q-card-section>
   </q-card>
 </template>
-
-<style scoped></style>

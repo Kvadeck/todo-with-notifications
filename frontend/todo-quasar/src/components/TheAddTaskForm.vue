@@ -31,7 +31,7 @@ function onSubmit() {
   } else if (!time.value || !date.value) {
     $q.notify(errorMessage(ErrorMessage.dateNotSelected));
   } else {
-    // Back to initial state after submit
+    // Back to initial state before submit
     store.reset();
 
     store
