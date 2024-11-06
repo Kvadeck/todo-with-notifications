@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
-import { db, Task } from '../services/db';
 
+import { Task, db } from '../services/db';
+
+// TODO: Move errors messages to enum
 export const useTasksStore = defineStore('tasks', {
   state: () => ({
     status: '',
@@ -47,6 +49,12 @@ export const useTasksStore = defineStore('tasks', {
         this.error = `Failed to delete selected tasks! ${error}`;
       }
     },
+    async toggleCompleted(id: number | undefined) {
+      if (id === undefined) {
+        this.error = 'Failed to set completed to selected task!';
+        return;
+      }
+    },
     reset() {
       this.status = '';
       this.error = '';
@@ -56,9 +64,8 @@ export const useTasksStore = defineStore('tasks', {
         this.error = 'Failed to add selected task!';
         return;
       }
-      console.log(id, 'id')
       if (this.selectedTasks.includes(id)) {
-        this.selectedTasks = this.selectedTasks.filter(item => item !== id);
+        this.selectedTasks = this.selectedTasks.filter((item) => item !== id);
       } else {
         this.selectedTasks.push(id);
       }

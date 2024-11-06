@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { Task } from 'src/services/db';
-import { computed, ref } from 'vue';
-import { useTasksStore } from 'stores/tasks';
-import { errorMessage, successMessage } from 'src/utils/main';
 import { useQuasar } from 'quasar';
+import { Task } from 'src/services/db';
+import { errorMessage, successMessage } from 'src/utils/main';
+import { useTasksStore } from 'stores/tasks';
+import { computed, ref } from 'vue';
 const store = useTasksStore();
 const $q = useQuasar();
 
 interface Props {
   task: Task;
 }
+
+const props = defineProps<Props>();
 
 const colors: Record<string, string> = {
   life: 'orange',
@@ -21,6 +23,10 @@ const checked = ref(false);
 
 const error = computed(() => store.error);
 const status = computed(() => store.status);
+
+const markedText = computed(() => {
+  return props.task.completed ? 'uncompleted' : 'completed';
+});
 
 function deleteTask(id: number | undefined) {
   store.reset();
@@ -34,28 +40,50 @@ function deleteTask(id: number | undefined) {
   });
 }
 
-defineProps<Props>();
+function toggleCompleted(id: number | undefined) {
+  store.reset();
+  store.toggleCompleted(id).then(() => {
+    // TODO: This is duplicate and need to move in composable
+    if (error.value) {
+      $q.notify(errorMessage(error.value));
+    } else {
+      $q.notify(successMessage(status.value));
+      store.loadTasks();
+    }
+  });
+}
 </script>
 
 <template>
-  <div class="col-12">
-    <q-card flat bordered class="bg-grey-2">
+  <div class="col-12" :class="{ blurred: task.completed }">
+    <q-card class="bg-grey-2" flat bordered>
       <q-card-section>
         <div class="task-card-inner">
-          <q-checkbox @change="store.addSelectedTask(task.id)"  size="sm" />
+          <q-checkbox
+            v-model="checked"
+            @click="store.addSelectedTask(task.id)"
+            size="sm"
+          />
           <div class="row items-center no-wrap">
             <div class="col">
-              <div class="text-h6 flex">{{ task.taskName }}</div>
+              <div
+                class="text-h6 flex"
+                :class="{ 'text-strike': task.completed }"
+              >
+                {{ task.taskName }}
+              </div>
             </div>
             <div class="col-auto">
               <q-btn color="grey-7" round flat icon="more_vert">
                 <q-menu cover auto-close>
                   <q-list>
-                    <q-item clickable>
-                      <q-item-section>Mark as completed</q-item-section>
+                    <q-item clickable @click="toggleCompleted(task.id)">
+                      <q-item-section>
+                        Mark as {{ markedText }}
+                      </q-item-section>
                     </q-item>
                     <q-item @click="deleteTask(task.id)" clickable>
-                      <q-item-section>Remove Card</q-item-section>
+                      <q-item-section>Remove Task</q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>
@@ -77,11 +105,3 @@ defineProps<Props>();
     </q-card>
   </div>
 </template>
-
-<style scoped>
-.task-card-inner {
-  display: grid;
-  grid-template-columns: 50px 1fr 0;
-  align-items: center;
-}
-</style>

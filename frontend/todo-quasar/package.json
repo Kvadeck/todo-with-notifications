@@ -30,7 +30,8 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-vue": "^9.0.0",
-    "prettier": "^2.5.1",
+    "prettier-plugin-organize-attributes": "^1.0.0",
+    "prettier-plugin-sort-imports": "^1.8.6",
     "typescript": "~5.5.4",
     "vite-plugin-checker": "^0.8.0",
     "vue-tsc": "^2.0.29"

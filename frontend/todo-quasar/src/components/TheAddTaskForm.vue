@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { computed, ref } from 'vue';
 import { errorMessage, nowDateOrTime, successMessage } from 'src/utils/main';
 import { useTasksStore } from 'stores/tasks';
+import { computed, ref } from 'vue';
+import { ErrorMessage } from 'src/models/errorMessage';
+
 const $q = useQuasar();
 
-const task_name = ref('');
-const category = ref(['life']);
-const date = ref(nowDateOrTime('date'));
-const time = ref(nowDateOrTime('time'));
-
-const store = useTasksStore();
-
-const error = computed(() => store.error);
-const status = computed(() => store.status);
+const task_name = ref(''),
+  category = ref(['life']),
+  date = ref(nowDateOrTime('date')),
+  time = ref(nowDateOrTime('time')),
+  store = useTasksStore(),
+  error = computed(() => store.error),
+  status = computed(() => store.status);
 
 function onSubmit() {
   if (date.value && time.value) {
@@ -21,17 +21,15 @@ function onSubmit() {
     const now = new Date();
 
     if (selectedDateTime < now) {
-      $q.notify(
-        errorMessage('You need to selected date and time is in the future.')
-      );
+      $q.notify(errorMessage(ErrorMessage.dateInFuture));
       return;
     }
   }
 
   if (!category.value.length) {
-    $q.notify(errorMessage('You need to select at least one category.'));
+    $q.notify(errorMessage(ErrorMessage.selectCategory));
   } else if (!time.value || !date.value) {
-    $q.notify(errorMessage('Date or time is not selected.'));
+    $q.notify(errorMessage(ErrorMessage.dateNotSelected));
   } else {
     // Back to initial state after submit
     store.reset();
@@ -71,9 +69,9 @@ function onReset() {
         <div class="text-h6 q-pb-md">Write your task:</div>
         <q-form @submit="onSubmit" @reset="onReset">
           <q-input
+            v-model="task_name"
             outlined
             label="Decide what it is you planing to do"
-            v-model="task_name"
             lazy-rules
             :rules="[
               (val) => (val && val.length > 0) || 'Please input your task',
@@ -120,11 +118,11 @@ function onReset() {
               color="secondary"
             />
             <q-btn
+              class="q-ml-sm"
               label="Reset"
               type="reset"
               color="secondary"
               flat
-              class="q-ml-sm"
             />
           </div>
         </q-form>
@@ -132,8 +130,3 @@ function onReset() {
     </q-card>
   </div>
 </template>
-
-<style lang="sass" scoped>
-.form-card
-  width: 100%
-</style>

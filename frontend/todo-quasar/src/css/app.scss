@@ -11,3 +11,14 @@
   padding: 0 20px;
   text-align: center;
 }
+.task-card-inner {
+  display: grid;
+  grid-template-columns: 50px 1fr 0;
+  align-items: center;
+}
+.form-card {
+  width: 100%;
+}
+.blurred {
+  opacity: 0.5;
+}
