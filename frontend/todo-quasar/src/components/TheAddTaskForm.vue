@@ -15,31 +15,36 @@ const $q = useQuasar(),
   store = useTasksStore();
 
 function onSubmit() {
-  if (date.value && time.value) {
-    const selectedDateTime = new Date(`${date.value}T${time.value}:00`);
-    const now = new Date();
+  const selectedDateTime =
+      date.value && time.value
+        ? new Date(`${date.value}T${time.value}:00`)
+        : null,
+    now = new Date();
 
-    if (selectedDateTime < now) {
-      $q.notify(errorMessage(ErrorMessage.dateInFuture));
-      return;
-    }
+  if (selectedDateTime && selectedDateTime < now) {
+    $q.notify(errorMessage(ErrorMessage.dateInFuture));
+    return;
+  }
+
+  if (!time.value || !date.value) {
+    $q.notify(errorMessage(ErrorMessage.dateNotSelected));
+    return;
   }
 
   if (!category.value.length) {
     $q.notify(errorMessage(ErrorMessage.selectCategory));
-  } else if (!time.value || !date.value) {
-    $q.notify(errorMessage(ErrorMessage.dateNotSelected));
-  } else {
-    executeTaskAction(store.addTask, {
-      taskName: task_name.value,
-      category: JSON.stringify(category.value),
-      date: new Date(`${date.value}T${time.value}:00`),
-    });
-
-    task_name.value = '';
-    date.value = '';
-    time.value = '';
+    return;
   }
+
+  executeTaskAction(store.addTask, {
+    taskName: task_name.value,
+    category: JSON.stringify(category.value),
+    date: new Date(`${date.value}T${time.value}:00`),
+  });
+
+  task_name.value = '';
+  date.value = '';
+  time.value = '';
 }
 
 function onReset() {

@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { useTasksStore } from 'stores/tasks';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 import TaskCard from 'components/TaskItem.vue';
 import AddTask from 'components/TheAddTaskForm.vue';
@@ -44,7 +44,23 @@ const store = useTasksStore();
 
 const error = computed(() => store.error),
   isLoading = computed(() => store.isLoading),
-  tasks = computed(() => store.tasks);
+  hasTasks = computed(() => store.hasTasks),
+  tasks = computed(() => store.tasks),
+  intervalId = ref<ReturnType<typeof setInterval> | null>(null);
+
+watch(
+  tasks,
+  async () => {
+    if (intervalId.value !== null) {
+      clearInterval(intervalId.value);
+    }
+    const tasksExist = await hasTasks.value;
+    if (tasksExist) {
+      intervalId.value = setInterval(store.checkNoticeTime, 1000);
+    }
+  },
+  { immediate: true },
+);
 
 onMounted(async () => {
   await store.loadTasks();

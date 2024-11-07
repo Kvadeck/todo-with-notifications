@@ -12,7 +12,11 @@ export const useTasksStore = defineStore('tasks', {
     tasks: [] as Task[],
     selectedTasks: [] as number[],
   }),
-  getters: {},
+  getters: {
+    async hasTasks(): Promise<boolean> {
+      return this.tasks.length > 0;
+    },
+  },
   actions: {
     async addTask(data: Task) {
       try {
@@ -81,6 +85,14 @@ export const useTasksStore = defineStore('tasks', {
     },
     resetSelectedTasks() {
       this.selectedTasks = [];
+    },
+    checkNoticeTime() {
+      // Перебираю задачи из массива не завершенных в каждую секунду
+      // На каждой итерации элемента сравниваю время сейчас и то которое было при отправке формы
+      // Стоит условие на каждой итерации и смотрит когда время равно
+      // Если это время совпало то ставлю у этого элемента свойство завершено и показываю уведомление с помощью состояния
+      // В компоненте есть вычисляемое свойство которое слушает это свойство и если оно равно true то показывает уведомление
+      // В тексте уведомления пишу что такая то задача завершена
     },
   },
 });
