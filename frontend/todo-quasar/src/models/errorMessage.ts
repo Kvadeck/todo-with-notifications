@@ -9,4 +9,5 @@ export enum ErrorMessage {
   failedSetCompleted = 'Failed to set completed to selected task!',
   failedAddSelected = 'Failed to add selected task!',
   selectOneTask = 'You need to select at least one task.',
+  unknownError = 'Something goes wrong..',
 }

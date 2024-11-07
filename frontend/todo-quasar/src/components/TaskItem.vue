@@ -1,52 +1,24 @@
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
 import { Task } from 'src/services/db';
-import { errorMessage, successMessage } from 'src/utils/main';
 import { useTasksStore } from 'stores/tasks';
+import { useTaskAction } from 'src/composables/useTaskAction';
 import { computed, ref } from 'vue';
 const store = useTasksStore();
-const $q = useQuasar();
 
 interface Props {
   task: Task;
 }
-
-const props = defineProps<Props>(),
+const { executeTaskAction } = useTaskAction(),
+  props = defineProps<Props>(),
   colors: Record<string, string> = {
     life: 'orange',
     work: 'red',
     family: 'cyan',
   },
   checked = ref(false),
-  error = computed(() => store.error),
-  status = computed(() => store.status),
   markedText = computed(() => {
     return props.task.completed ? 'uncompleted' : 'completed';
   });
-
-function deleteTask(id: number | undefined) {
-  store.reset();
-  store.deleteTask(id).then(() => {
-    if (error.value) {
-      $q.notify(errorMessage(error.value));
-    } else {
-      $q.notify(successMessage(status.value));
-      store.loadTasks();
-    }
-  });
-}
-
-function toggleCompleted(id: number | undefined) {
-  store.reset();
-  store.toggleCompleted(id).then(() => {
-    if (error.value) {
-      $q.notify(errorMessage(error.value));
-    } else {
-      $q.notify(successMessage(status.value));
-      store.loadTasks();
-    }
-  });
-}
 </script>
 
 <template>
@@ -72,12 +44,18 @@ function toggleCompleted(id: number | undefined) {
               <q-btn color="grey-7" round flat icon="more_vert">
                 <q-menu cover auto-close>
                   <q-list>
-                    <q-item clickable @click="toggleCompleted(task.id)">
+                    <q-item
+                      clickable
+                      @click="executeTaskAction(store.toggleCompleted, task.id)"
+                    >
                       <q-item-section>
                         Mark as {{ markedText }}
                       </q-item-section>
                     </q-item>
-                    <q-item @click="deleteTask(task.id)" clickable>
+                    <q-item
+                      @click="executeTaskAction(store.deleteTask, task.id)"
+                      clickable
+                    >
                       <q-item-section>Remove Task</q-item-section>
                     </q-item>
                   </q-list>
@@ -90,8 +68,8 @@ function toggleCompleted(id: number | undefined) {
       <q-separator />
       <div class="q-pa-sm q-gutter-sm">
         <q-badge
-          v-for="category in JSON.parse(task.category)"
-          :key="category"
+          v-for="(category, index) in JSON.parse(task.category)"
+          :key="index"
           outline
           :color="colors[category]"
           :label="category"

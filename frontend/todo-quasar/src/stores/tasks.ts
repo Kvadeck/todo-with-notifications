@@ -4,8 +4,6 @@ import { Task, db } from '../services/db';
 import { StatusMessage } from 'src/models/statusMessage';
 import { ErrorMessage } from 'src/models/errorMessage';
 
-// TODO: Move errors messages to enum
-
 export const useTasksStore = defineStore('tasks', {
   state: () => ({
     status: '',
@@ -34,7 +32,7 @@ export const useTasksStore = defineStore('tasks', {
         this.isLoading = false;
       }
     },
-    async deleteTask(id: number | undefined) {
+    async deleteTask(id: number) {
       try {
         await db.tasks.delete(id);
         this.status = StatusMessage.taskDeleted + id;
@@ -52,7 +50,7 @@ export const useTasksStore = defineStore('tasks', {
         this.error = ErrorMessage.failedDeleteSelected + ' ' + error;
       }
     },
-    async toggleCompleted(id: number | undefined) {
+    async toggleCompleted(id: number) {
       if (id === undefined) {
         this.error = ErrorMessage.failedSetCompleted;
         return;

@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { errorMessage, nowDateOrTime, successMessage } from 'src/utils/main';
+import { errorMessage, nowDateOrTime } from 'src/utils/main';
 import { useTasksStore } from 'stores/tasks';
-import { computed, ref } from 'vue';
+import { useTaskAction } from 'src/composables/useTaskAction';
+import { ref } from 'vue';
 import { ErrorMessage } from 'src/models/errorMessage';
 
-const $q = useQuasar();
-
-const task_name = ref(''),
+const $q = useQuasar(),
+  { executeTaskAction } = useTaskAction(),
+  task_name = ref(''),
   category = ref(['life']),
   date = ref(nowDateOrTime('date')),
   time = ref(nowDateOrTime('time')),
-  store = useTasksStore(),
-  error = computed(() => store.error),
-  status = computed(() => store.status);
+  store = useTasksStore();
 
 function onSubmit() {
   if (date.value && time.value) {
@@ -31,23 +30,11 @@ function onSubmit() {
   } else if (!time.value || !date.value) {
     $q.notify(errorMessage(ErrorMessage.dateNotSelected));
   } else {
-    // Back to initial state before submit
-    store.reset();
-
-    store
-      .addTask({
-        taskName: task_name.value,
-        category: JSON.stringify(category.value),
-        date: new Date(`${date.value}T${time.value}:00`),
-      })
-      .then(() => {
-        if (error.value) {
-          $q.notify(errorMessage(error.value));
-        } else {
-          $q.notify(successMessage(status.value));
-          store.loadTasks();
-        }
-      });
+    executeTaskAction(store.addTask, {
+      taskName: task_name.value,
+      category: JSON.stringify(category.value),
+      date: new Date(`${date.value}T${time.value}:00`),
+    });
 
     task_name.value = '';
     date.value = '';

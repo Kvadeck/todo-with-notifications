@@ -2,13 +2,13 @@
 import { useTasksStore } from 'stores/tasks';
 import { useQuasar } from 'quasar';
 import { computed } from 'vue';
-import { errorMessage, successMessage } from 'src/utils/main';
+import { errorMessage } from 'src/utils/main';
 import { ErrorMessage } from 'src/models/errorMessage';
+import { useTaskAction } from 'src/composables/useTaskAction';
 
 const store = useTasksStore(),
+  { executeTaskAction } = useTaskAction(),
   $q = useQuasar(),
-  error = computed(() => store.error),
-  status = computed(() => store.status),
   selected = computed(() => store.selectedTasks);
 
 function deleteSelectedTasks() {
@@ -18,18 +18,8 @@ function deleteSelectedTasks() {
     $q.notify(errorMessage(ErrorMessage.selectOneTask));
     return;
   }
-
-  store.deleteSelectedTasks(selected.value).then(() => {
-    if (error.value) {
-      $q.notify(errorMessage(error.value));
-    } else {
-      $q.notify(successMessage(status.value));
-
-      // Reset selected tasks array after deletion
-      store.resetSelectedTasks();
-      store.loadTasks();
-    }
-  });
+  executeTaskAction(store.deleteSelectedTasks, selected.value);
+  store.resetSelectedTasks();
 }
 
 function refreshTasks() {
