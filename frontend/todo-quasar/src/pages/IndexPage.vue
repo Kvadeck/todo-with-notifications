@@ -1,5 +1,6 @@
 <!-- TODO: Задача автоматически ставится выполненой при истечение срока выполнения -->
 <!-- TODO: Сделать возможность показа уведомление по истечению времени задачи -->
+<!-- TODO: Вывести время в задаче -->
 
 <!-- TODO: Добавить пагинацию -->
 <!-- TODO: Добавить возможность передвигать карточки задач -->
@@ -27,6 +28,23 @@
         </div>
       </div>
     </div>
+
+    <q-dialog v-model="isNotice">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Notice</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn @click="store.resetIsNotice" flat label="OK" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 
@@ -46,6 +64,7 @@ const error = computed(() => store.error),
   isLoading = computed(() => store.isLoading),
   hasTasks = computed(() => store.hasTasks),
   tasks = computed(() => store.tasks),
+  isNotice = computed(() => store.isNotice),
   intervalId = ref<ReturnType<typeof setInterval> | null>(null);
 
 watch(

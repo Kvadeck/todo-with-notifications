@@ -11,6 +11,7 @@ export const useTasksStore = defineStore('tasks', {
     isLoading: false,
     tasks: [] as Task[],
     selectedTasks: [] as number[],
+    isNotice: null as boolean | null,
   }),
   getters: {
     async hasTasks(): Promise<boolean> {
@@ -86,13 +87,31 @@ export const useTasksStore = defineStore('tasks', {
     resetSelectedTasks() {
       this.selectedTasks = [];
     },
-    checkNoticeTime() {
-      // Перебираю задачи из массива не завершенных в каждую секунду
-      // На каждой итерации элемента сравниваю время сейчас и то которое было при отправке формы
-      // Стоит условие на каждой итерации и смотрит когда время равно
+    async checkNoticeTime() {
+      const now = new Date().toISOString().slice(0, 16);
+
+      // TODO: Set filter for tasks that is in the past
+      const unCompletedTasks = this.tasks.filter(task => !task.completed)
+
+      for await (const taskItem of unCompletedTasks) {
+        const taskTime = new Date(taskItem.date).toISOString().slice(0, 16);
+        if (taskTime === now) {
+          const task = await db.tasks.get(taskItem.id);
+          if (task) {
+            task.completed = true;
+            await db.tasks.update(task.id, task);
+            this.tasks = await db.tasks.toArray();
+            this.isNotice = true;
+          }
+        }
+      }
+
       // Если это время совпало то ставлю у этого элемента свойство завершено и показываю уведомление с помощью состояния
       // В компоненте есть вычисляемое свойство которое слушает это свойство и если оно равно true то показывает уведомление
       // В тексте уведомления пишу что такая то задача завершена
+    },
+    resetIsNotice() {
+      this.isNotice = null;
     },
   },
 });
