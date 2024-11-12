@@ -12,10 +12,15 @@ export const useTasksStore = defineStore('tasks', {
     tasks: [] as Task[],
     selectedTasks: [] as number[],
     isNotice: null as boolean | null,
+    noticeData: null as Task | null,
   }),
   getters: {
-    async hasTasks(): Promise<boolean> {
+    hasTasks(): boolean {
       return this.tasks.length > 0;
+    },
+    tasksForNotice(): Task[] {
+      const now = new Date();
+      return this.tasks.filter((task) => !task.completed && task.date > now);
     },
   },
   actions: {
@@ -88,30 +93,30 @@ export const useTasksStore = defineStore('tasks', {
       this.selectedTasks = [];
     },
     async checkNoticeTime() {
-      const now = new Date().toISOString().slice(0, 16);
+      const nowISO = new Date().toISOString().slice(0, 16);
 
-      // TODO: Set filter for tasks that is in the past
-      const unCompletedTasks = this.tasks.filter(task => !task.completed)
-
-      for await (const taskItem of unCompletedTasks) {
+      for await (const taskItem of this.tasksForNotice) {
         const taskTime = new Date(taskItem.date).toISOString().slice(0, 16);
-        if (taskTime === now) {
-          const task = await db.tasks.get(taskItem.id);
-          if (task) {
-            task.completed = true;
-            await db.tasks.update(task.id, task);
-            this.tasks = await db.tasks.toArray();
-            this.isNotice = true;
+        try {
+          if (taskTime === nowISO) {
+            const task = await db.tasks.get(taskItem.id);
+
+            if (task) {
+              await db.tasks.update(task.id, { ...task, completed: true });
+              this.tasks = await db.tasks.toArray();
+              this.isNotice = true;
+              this.noticeData = task;
+            }
           }
+        } catch (error) {
+          this.error = ErrorMessage.notExist;
+          return;
         }
       }
-
-      // Если это время совпало то ставлю у этого элемента свойство завершено и показываю уведомление с помощью состояния
-      // В компоненте есть вычисляемое свойство которое слушает это свойство и если оно равно true то показывает уведомление
-      // В тексте уведомления пишу что такая то задача завершена
     },
     resetIsNotice() {
       this.isNotice = null;
+      this.noticeData = null;
     },
   },
 });

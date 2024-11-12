@@ -1,11 +1,5 @@
 import { date } from 'quasar';
-
-type noticeMessage = {
-  color: string;
-  textColor: string;
-  icon: string;
-  message: string;
-};
+import { Notify } from 'quasar';
 
 export function nowDateOrTime(value: 'time' | 'date'): string | undefined {
   const timeStamp = Date.now();
@@ -16,20 +10,24 @@ export function nowDateOrTime(value: 'time' | 'date'): string | undefined {
   }
 }
 
-export function errorMessage(message: string): noticeMessage {
-  return {
+export function errorMessage(message: string) {
+  Notify.create({
     color: 'red-5',
     textColor: 'white',
     icon: 'warning',
+    position: 'top',
     message: message,
-  };
+    progress: true,
+  });
 }
 
-export function successMessage(message: string): noticeMessage {
-  return {
+export function successMessage(message: string) {
+  Notify.create({
     color: 'green-4',
     textColor: 'white',
     icon: 'cloud_done',
+    position: 'top',
     message: message,
-  };
+    progress: true,
+  });
 }

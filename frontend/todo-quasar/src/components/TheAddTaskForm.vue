@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
 import { errorMessage, nowDateOrTime } from 'src/utils/main';
 import { useTasksStore } from 'stores/tasks';
 import { useTaskAction } from 'src/composables/useTaskAction';
 import { ref } from 'vue';
 import { ErrorMessage } from 'src/models/errorMessage';
 
-const $q = useQuasar(),
-  { executeTaskAction } = useTaskAction(),
+const { executeTaskAction } = useTaskAction(),
   task_name = ref(''),
   category = ref(['life']),
   date = ref(nowDateOrTime('date')),
@@ -22,17 +20,17 @@ function onSubmit() {
     now = new Date();
 
   if (selectedDateTime && selectedDateTime < now) {
-    $q.notify(errorMessage(ErrorMessage.dateInFuture));
+    errorMessage(ErrorMessage.dateInFuture);
     return;
   }
 
   if (!time.value || !date.value) {
-    $q.notify(errorMessage(ErrorMessage.dateNotSelected));
+    errorMessage(ErrorMessage.dateNotSelected);
     return;
   }
 
   if (!category.value.length) {
-    $q.notify(errorMessage(ErrorMessage.selectCategory));
+    errorMessage(ErrorMessage.selectCategory);
     return;
   }
 

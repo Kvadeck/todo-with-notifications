@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useTasksStore } from 'stores/tasks';
-import { useQuasar } from 'quasar';
 import { computed } from 'vue';
 import { errorMessage } from 'src/utils/main';
 import { ErrorMessage } from 'src/models/errorMessage';
@@ -8,14 +7,13 @@ import { useTaskAction } from 'src/composables/useTaskAction';
 
 const store = useTasksStore(),
   { executeTaskAction } = useTaskAction(),
-  $q = useQuasar(),
   selected = computed(() => store.selectedTasks);
 
 function deleteSelectedTasks() {
   store.reset();
 
   if (!selected.value.length) {
-    $q.notify(errorMessage(ErrorMessage.selectOneTask));
+    errorMessage(ErrorMessage.selectOneTask);
     return;
   }
   executeTaskAction(store.deleteSelectedTasks, selected.value);

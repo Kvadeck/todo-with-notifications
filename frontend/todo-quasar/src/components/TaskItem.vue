@@ -3,6 +3,7 @@ import { Task } from 'src/services/db';
 import { useTasksStore } from 'stores/tasks';
 import { useTaskAction } from 'src/composables/useTaskAction';
 import { computed, ref } from 'vue';
+import { date } from 'quasar';
 const store = useTasksStore();
 
 interface Props {
@@ -23,7 +24,7 @@ const { executeTaskAction } = useTaskAction(),
 
 <template>
   <div class="col-12" :class="{ blurred: task.completed }">
-    <q-card class="bg-grey-2" flat bordered>
+    <q-card flat bordered>
       <q-card-section>
         <div class="task-card-inner">
           <q-checkbox
@@ -66,14 +67,28 @@ const { executeTaskAction } = useTaskAction(),
         </div>
       </q-card-section>
       <q-separator />
-      <div class="q-pa-sm q-gutter-sm">
-        <q-badge
-          v-for="(category, index) in JSON.parse(task.category)"
-          :key="index"
-          outline
-          :color="colors[category]"
-          :label="category"
-        />
+      <div class="flex items-center justify-between q-px-sm">
+        <div class="q-pa-sm q-gutter-sm">
+          <q-badge
+            v-for="(category, index) in JSON.parse(task.category)"
+            :key="index"
+            outline
+            :color="colors[category]"
+            :label="category"
+          />
+        </div>
+        <div class="q-gutter-sm">
+          <q-badge
+            outline
+            color="purple"
+            :label="date.formatDate(task.date, 'HH:mm')"
+          />
+          <q-badge
+            outline
+            color="primary"
+            :label="date.formatDate(task.date, 'DD.MM.YYYY')"
+          />
+        </div>
       </div>
     </q-card>
   </div>

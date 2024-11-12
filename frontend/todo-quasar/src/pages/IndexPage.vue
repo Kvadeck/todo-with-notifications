@@ -1,6 +1,5 @@
-<!-- TODO: Задача автоматически ставится выполненой при истечение срока выполнения -->
+<!-- TODO: Задача автоматически ставится выполненной при истечение срока выполнения -->
 <!-- TODO: Сделать возможность показа уведомление по истечению времени задачи -->
-<!-- TODO: Вывести время в задаче -->
 
 <!-- TODO: Добавить пагинацию -->
 <!-- TODO: Добавить возможность передвигать карточки задач -->
@@ -30,21 +29,49 @@
     </div>
 
     <q-dialog v-model="isNotice">
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">Notice</div>
-        </q-card-section>
+      <div v-if="noticeData">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">
+              Task is completed.
+            </div>
+          </q-card-section>
 
-        <q-card-section class="q-pt-none">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
-        </q-card-section>
+          <q-card-section class="q-pt-none">
+            <q-list bordered separator>
+              <q-item v-ripple clickable>
+                <q-item-section>
+                  ID: {{ noticeData.id }}
+                </q-item-section>
+              </q-item>
+              <q-item v-ripple clickable>
+                <q-item-section>
+                  Name: {{ noticeData.taskName }}
+                </q-item-section>
+              </q-item>
+              <q-item v-ripple clickable>
+                <q-item-section
+                  >Date:
+                  {{
+                    date.formatDate(noticeData.date, 'DD.MM.YYYY HH:mm')
+                  }}</q-item-section
+                >
+              </q-item>
+            </q-list>
+          </q-card-section>
 
-        <q-card-actions align="right">
-          <q-btn @click="store.resetIsNotice" flat label="OK" color="primary" v-close-popup />
-        </q-card-actions>
-      </q-card>
+          <q-card-actions align="right">
+            <q-btn
+              v-close-popup
+              @click="store.resetIsNotice"
+              flat
+              label="OK"
+              color="primary"
+            />
+          </q-card-actions>
+        </q-card>
+      </div>
     </q-dialog>
-
   </q-page>
 </template>
 
@@ -57,25 +84,28 @@ import AddTask from 'components/TheAddTaskForm.vue';
 import TasksControls from 'components/TheTasksTopPanel.vue';
 import ErrorBlock from 'components/ui/ErrorBlock.vue';
 import Spinner from 'components/ui/LSpinner.vue';
+import { date } from 'quasar';
 
 const store = useTasksStore();
 
 const error = computed(() => store.error),
   isLoading = computed(() => store.isLoading),
-  hasTasks = computed(() => store.hasTasks),
+  tasksForNotice = computed(() => store.tasksForNotice),
   tasks = computed(() => store.tasks),
+  noticeData = computed(() => store.noticeData),
   isNotice = computed(() => store.isNotice),
-  intervalId = ref<ReturnType<typeof setInterval> | null>(null);
+  timer = ref<null | number>(null);
 
 watch(
   tasks,
   async () => {
-    if (intervalId.value !== null) {
-      clearInterval(intervalId.value);
+    // TODO: В тексте уведомления пишу что такая то задача завершена
+    if (timer.value !== null) {
+      clearInterval(timer.value);
     }
-    const tasksExist = await hasTasks.value;
-    if (tasksExist) {
-      intervalId.value = setInterval(store.checkNoticeTime, 1000);
+
+    if (tasksForNotice.value.length) {
+      timer.value = window.setInterval(store.checkNoticeTime, 1000);
     }
   },
   { immediate: true },

@@ -1,12 +1,10 @@
 import { computed } from 'vue';
-import { useQuasar } from 'quasar';
 import { useTasksStore } from 'stores/tasks';
 import { errorMessage, successMessage } from 'src/utils/main';
 import { ErrorMessage } from 'src/models/errorMessage';
 
 export function useTaskAction() {
-  const $q = useQuasar(),
-    store = useTasksStore(),
+  const store = useTasksStore(),
     error = computed(() => store.error),
     status = computed(() => store.status);
 
@@ -19,15 +17,15 @@ export function useTaskAction() {
       await action(param);
 
       if (error.value) {
-        $q.notify(errorMessage(error.value));
+        errorMessage(error.value);
       } else {
         await store.loadTasks();
-        $q.notify(successMessage(status.value));
+        successMessage(status.value);
       }
     } catch (err) {
       const error =
         err instanceof Error ? err.message : ErrorMessage.unknownError;
-      $q.notify(errorMessage(error));
+      errorMessage(error);
     }
   }
 
