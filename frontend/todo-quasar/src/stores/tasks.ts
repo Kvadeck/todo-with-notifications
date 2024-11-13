@@ -6,18 +6,15 @@ import { ErrorMessage } from 'src/models/errorMessage';
 
 export const useTasksStore = defineStore('tasks', {
   state: () => ({
-    status: '',
-    error: '',
-    isLoading: false,
+    status: '' as string,
+    error: '' as string,
+    isLoading: false as boolean,
     tasks: [] as Task[],
     selectedTasks: [] as number[],
     isNotice: null as boolean | null,
     noticeData: null as Task | null,
   }),
   getters: {
-    hasTasks(): boolean {
-      return this.tasks.length > 0;
-    },
     tasksForNotice(): Task[] {
       const now = new Date();
       return this.tasks.filter((task) => !task.completed && task.date > now);
@@ -52,8 +49,8 @@ export const useTasksStore = defineStore('tasks', {
     },
     async deleteSelectedTasks(tasksIds: number[]) {
       try {
-        for (const item of tasksIds) {
-          await db.tasks.delete(item);
+        for (const id of tasksIds) {
+          await db.tasks.delete(id);
         }
         this.status = StatusMessage.selectedDeleted;
       } catch (error) {
@@ -61,14 +58,13 @@ export const useTasksStore = defineStore('tasks', {
       }
     },
     async toggleCompleted(id: number) {
-      if (id === undefined) {
+      if (!id) {
         this.error = ErrorMessage.failedSetCompleted;
         return;
       }
       try {
         const task = await db.tasks.get(id);
-        const updated = { completed: !task?.completed };
-        await db.tasks.update(id, updated);
+        await db.tasks.update(id, {...task, completed: !task?.completed});
         this.status = StatusMessage.taskUpdated;
       } catch (error) {
         this.error = ErrorMessage.failedSetCompleted + ' ' + error;
@@ -79,7 +75,7 @@ export const useTasksStore = defineStore('tasks', {
       this.error = '';
     },
     addSelectedTask(id: number | undefined) {
-      if (id === undefined) {
+      if (!id) {
         this.error = ErrorMessage.failedAddSelected;
         return;
       }
@@ -95,10 +91,10 @@ export const useTasksStore = defineStore('tasks', {
     async checkNoticeTime() {
       const nowISO = new Date().toISOString().slice(0, 16);
 
-      for await (const taskItem of this.tasksForNotice) {
-        const taskTime = new Date(taskItem.date).toISOString().slice(0, 16);
+      for (const taskItem of this.tasksForNotice) {
+        const taskTimeISO = new Date(taskItem.date).toISOString().slice(0, 16);
         try {
-          if (taskTime === nowISO) {
+          if (taskTimeISO === nowISO) {
             const task = await db.tasks.get(taskItem.id);
 
             if (task) {

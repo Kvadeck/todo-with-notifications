@@ -1,11 +1,50 @@
-<!-- TODO: Задача автоматически ставится выполненной при истечение срока выполнения -->
-<!-- TODO: Сделать возможность показа уведомление по истечению времени задачи -->
-
 <!-- TODO: Добавить пагинацию -->
 <!-- TODO: Добавить возможность передвигать карточки задач -->
-
+<!-- TODO: Подумать над тем как можно реализовать срабатывание несколько уведомлений в одно и тоже время -->
 <!-- TODO: Добавить возможность темный темы -->
 <!-- TODO: Добавить интернационализацию -->
+
+<script setup lang="ts">
+import { useTasksStore } from 'stores/tasks';
+import { computed, onMounted, ref, watch } from 'vue';
+
+import TaskCard from 'components/TaskItem.vue';
+import AddTask from 'components/TheAddTaskForm.vue';
+import TasksControls from 'components/TheTasksTopPanel.vue';
+import ErrorBlock from 'components/ui/ErrorBlock.vue';
+import Spinner from 'components/ui/LSpinner.vue';
+import NoticeDialog from 'components/ui/NoticeDialog.vue';
+
+const store = useTasksStore();
+
+const error = computed(() => store.error),
+  isLoading = computed(() => store.isLoading),
+  tasksForNotice = computed(() => store.tasksForNotice),
+  tasks = computed(() => store.tasks),
+  timer = ref<null | number>(null);
+
+watch(
+  tasks,
+  async () => {
+    if (timer.value !== null) {
+      clearInterval(timer.value);
+    }
+
+    if (tasksForNotice.value.length) {
+      timer.value = window.setInterval(store.checkNoticeTime, 1000);
+    }
+  },
+  { immediate: true },
+);
+
+onMounted(async () => {
+  await store.loadTasks();
+});
+
+defineOptions({
+  name: 'IndexPage',
+});
+</script>
 
 <template>
   <q-page>
@@ -27,95 +66,6 @@
         </div>
       </div>
     </div>
-
-    <q-dialog v-model="isNotice">
-      <div v-if="noticeData">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">
-              Task is completed.
-            </div>
-          </q-card-section>
-
-          <q-card-section class="q-pt-none">
-            <q-list bordered separator>
-              <q-item v-ripple clickable>
-                <q-item-section>
-                  ID: {{ noticeData.id }}
-                </q-item-section>
-              </q-item>
-              <q-item v-ripple clickable>
-                <q-item-section>
-                  Name: {{ noticeData.taskName }}
-                </q-item-section>
-              </q-item>
-              <q-item v-ripple clickable>
-                <q-item-section
-                  >Date:
-                  {{
-                    date.formatDate(noticeData.date, 'DD.MM.YYYY HH:mm')
-                  }}</q-item-section
-                >
-              </q-item>
-            </q-list>
-          </q-card-section>
-
-          <q-card-actions align="right">
-            <q-btn
-              v-close-popup
-              @click="store.resetIsNotice"
-              flat
-              label="OK"
-              color="primary"
-            />
-          </q-card-actions>
-        </q-card>
-      </div>
-    </q-dialog>
+    <notice-dialog />
   </q-page>
 </template>
-
-<script setup lang="ts">
-import { useTasksStore } from 'stores/tasks';
-import { computed, onMounted, ref, watch } from 'vue';
-
-import TaskCard from 'components/TaskItem.vue';
-import AddTask from 'components/TheAddTaskForm.vue';
-import TasksControls from 'components/TheTasksTopPanel.vue';
-import ErrorBlock from 'components/ui/ErrorBlock.vue';
-import Spinner from 'components/ui/LSpinner.vue';
-import { date } from 'quasar';
-
-const store = useTasksStore();
-
-const error = computed(() => store.error),
-  isLoading = computed(() => store.isLoading),
-  tasksForNotice = computed(() => store.tasksForNotice),
-  tasks = computed(() => store.tasks),
-  noticeData = computed(() => store.noticeData),
-  isNotice = computed(() => store.isNotice),
-  timer = ref<null | number>(null);
-
-watch(
-  tasks,
-  async () => {
-    // TODO: В тексте уведомления пишу что такая то задача завершена
-    if (timer.value !== null) {
-      clearInterval(timer.value);
-    }
-
-    if (tasksForNotice.value.length) {
-      timer.value = window.setInterval(store.checkNoticeTime, 1000);
-    }
-  },
-  { immediate: true },
-);
-
-onMounted(async () => {
-  await store.loadTasks();
-});
-
-defineOptions({
-  name: 'IndexPage',
-});
-</script>
