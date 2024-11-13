@@ -1,6 +1,6 @@
-<!-- TODO: Добавить пагинацию -->
+<!-- TODO: Когда находишься на странице и удаляешь все текущие элементы то она становится пустой  -->
 <!-- TODO: Добавить возможность передвигать карточки задач -->
-<!-- TODO: Подумать над тем как можно реализовать срабатывание несколько уведомлений в одно и тоже время -->
+<!-- TODO: Подумать над тем как можно показывать несколько уведомлений по очереди в одно и тоже время -->
 <!-- TODO: Добавить возможность темный темы -->
 <!-- TODO: Добавить интернационализацию -->
 
@@ -14,6 +14,7 @@ import TasksControls from 'components/TheTasksTopPanel.vue';
 import ErrorBlock from 'components/ui/ErrorBlock.vue';
 import Spinner from 'components/ui/LSpinner.vue';
 import NoticeDialog from 'components/ui/NoticeDialog.vue';
+import { ELEMENTS_ON_PAGE } from 'src/constants';
 
 const store = useTasksStore();
 
@@ -21,7 +22,10 @@ const error = computed(() => store.error),
   isLoading = computed(() => store.isLoading),
   tasksForNotice = computed(() => store.tasksForNotice),
   tasks = computed(() => store.tasks),
-  timer = ref<null | number>(null);
+  totalPages = computed(() => store.totalPages),
+  isPagination = computed(() => store.isPagination),
+  timer = ref<null | number>(null),
+  currentPage = ref(1);
 
 watch(
   tasks,
@@ -36,6 +40,12 @@ watch(
   },
   { immediate: true },
 );
+
+const paginatedItems = computed(() => {
+  const start = (currentPage.value - 1) * ELEMENTS_ON_PAGE,
+    end = start + ELEMENTS_ON_PAGE;
+  return tasks.value.slice(start, end);
+});
 
 onMounted(async () => {
   await store.loadTasks();
@@ -59,7 +69,21 @@ defineOptions({
           <spinner v-else-if="isLoading" />
           <template v-else>
             <div class="row q-col-gutter-sm" v-if="tasks?.length">
-              <task-card v-for="task in tasks" :key="task.id" :task="task" />
+              <task-card
+                v-for="task in paginatedItems"
+                :key="task.id"
+                :task="task"
+              />
+              <div class="flex justify-center full-width" v-if="isPagination">
+                <q-pagination
+                  v-model="currentPage"
+                  :max="totalPages"
+                  direction-links
+                  flat
+                  color="grey"
+                  active-color="primary"
+                />
+              </div>
             </div>
             <error-block v-else icon="today" text="No tasks found..." />
           </template>

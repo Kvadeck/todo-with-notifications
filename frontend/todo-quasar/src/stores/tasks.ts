@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { Task, db } from '../services/db';
 import { StatusMessage } from 'src/models/statusMessage';
 import { ErrorMessage } from 'src/models/errorMessage';
+import { ELEMENTS_ON_PAGE } from 'src/constants';
 
 export const useTasksStore = defineStore('tasks', {
   state: () => ({
@@ -18,6 +19,12 @@ export const useTasksStore = defineStore('tasks', {
     tasksForNotice(): Task[] {
       const now = new Date();
       return this.tasks.filter((task) => !task.completed && task.date > now);
+    },
+    isPagination(): boolean {
+      return this.tasks.length > ELEMENTS_ON_PAGE;
+    },
+    totalPages(): number {
+      return Math.ceil(this.tasks.length / ELEMENTS_ON_PAGE);
     },
   },
   actions: {
@@ -64,7 +71,7 @@ export const useTasksStore = defineStore('tasks', {
       }
       try {
         const task = await db.tasks.get(id);
-        await db.tasks.update(id, {...task, completed: !task?.completed});
+        await db.tasks.update(id, { ...task, completed: !task?.completed });
         this.status = StatusMessage.taskUpdated;
       } catch (error) {
         this.error = ErrorMessage.failedSetCompleted + ' ' + error;
