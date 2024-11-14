@@ -23,7 +23,7 @@ const { executeTaskAction } = useTaskAction(),
 </script>
 
 <template>
-  <div class="col-12" :class="{ blurred: task.completed }">
+  <div class="col-12" :class="{ completed: task.completed }">
     <q-card flat bordered>
       <q-card-section>
         <div class="task-card-inner">
@@ -42,26 +42,36 @@ const { executeTaskAction } = useTaskAction(),
               </div>
             </div>
             <div class="col-auto">
-              <q-btn color="grey-7" round flat icon="more_vert">
-                <q-menu cover auto-close>
-                  <q-list>
-                    <q-item
-                      clickable
-                      @click="executeTaskAction(store.toggleCompleted, task.id)"
-                    >
-                      <q-item-section>
-                        Mark as {{ markedText }}
-                      </q-item-section>
-                    </q-item>
-                    <q-item
-                      @click="executeTaskAction(store.deleteTask, task.id)"
-                      clickable
-                    >
-                      <q-item-section>Remove Task</q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-menu>
-              </q-btn>
+              <div class="flex items-center">
+                <q-icon
+                  class="handle q-px-sm cursor-pointer"
+                  color="grey-7"
+                  name="fa fa-bars"
+                  size="20px"
+                />
+                <q-btn color="grey-7" round flat icon="more_vert">
+                  <q-menu cover auto-close>
+                    <q-list>
+                      <q-item
+                        clickable
+                        @click="
+                          executeTaskAction(store.toggleCompleted, task.id)
+                        "
+                      >
+                        <q-item-section>
+                          Mark as {{ markedText }}
+                        </q-item-section>
+                      </q-item>
+                      <q-item
+                        @click="executeTaskAction(store.deleteTask, task.id)"
+                        clickable
+                      >
+                        <q-item-section>Remove Task</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </q-btn>
+              </div>
             </div>
           </div>
         </div>

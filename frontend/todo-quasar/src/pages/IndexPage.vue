@@ -1,5 +1,7 @@
-<!-- TODO: Когда находишься на странице и удаляешь все текущие элементы то она становится пустой  -->
 <!-- TODO: Добавить возможность передвигать карточки задач -->
+<!-- TODO: Отредактировать коммиты, чтобы они были видны на странице статистики в github -->
+
+<!-- TODO: Подумать над дизайном состояния выполненной задачи в виде штампа выполнено и.т.д. -->
 <!-- TODO: Подумать над тем как можно показывать несколько уведомлений по очереди в одно и тоже время -->
 <!-- TODO: Добавить возможность темный темы -->
 <!-- TODO: Добавить интернационализацию -->
@@ -7,7 +9,6 @@
 <script setup lang="ts">
 import { useTasksStore } from 'stores/tasks';
 import { computed, onMounted, ref, watch } from 'vue';
-
 import TaskCard from 'components/TaskItem.vue';
 import AddTask from 'components/TheAddTaskForm.vue';
 import TasksControls from 'components/TheTasksTopPanel.vue';
@@ -15,6 +16,7 @@ import ErrorBlock from 'components/ui/ErrorBlock.vue';
 import Spinner from 'components/ui/LSpinner.vue';
 import NoticeDialog from 'components/ui/NoticeDialog.vue';
 import { ELEMENTS_ON_PAGE } from 'src/constants';
+import draggable from 'vuedraggable';
 
 const store = useTasksStore();
 
@@ -41,10 +43,20 @@ watch(
   { immediate: true },
 );
 
-const paginatedItems = computed(() => {
-  const start = (currentPage.value - 1) * ELEMENTS_ON_PAGE,
-    end = start + ELEMENTS_ON_PAGE;
-  return tasks.value.slice(start, end);
+const start = computed(() => {
+  return (currentPage.value - 1) * ELEMENTS_ON_PAGE;
+});
+
+const paginatedItems = computed({
+  get() {
+    const end = start.value + ELEMENTS_ON_PAGE;
+    return !tasks.value.slice(start.value, end).length
+      ? tasks.value
+      : tasks.value.slice(start.value, end);
+  },
+  set(newTasks) {
+    store.update(newTasks, start.value);
+  },
 });
 
 onMounted(async () => {
@@ -68,13 +80,21 @@ defineOptions({
           <error-block v-if="error" icon="error" :text="error" />
           <spinner v-else-if="isLoading" />
           <template v-else>
-            <div class="row q-col-gutter-sm" v-if="tasks?.length">
-              <task-card
-                v-for="task in paginatedItems"
-                :key="task.id"
-                :task="task"
-              />
-              <div class="flex justify-center full-width" v-if="isPagination">
+            <template v-if="tasks?.length">
+              <draggable
+                class="row q-col-gutter-sm"
+                v-model="paginatedItems"
+                item-key="id"
+                handle=".handle"
+              >
+                <template #item="{ element }">
+                  <task-card :task="element" />
+                </template>
+              </draggable>
+              <div
+                class="flex justify-center full-width q-mt-sm"
+                v-if="isPagination"
+              >
                 <q-pagination
                   v-model="currentPage"
                   :max="totalPages"
@@ -84,7 +104,7 @@ defineOptions({
                   active-color="primary"
                 />
               </div>
-            </div>
+            </template>
             <error-block v-else icon="today" text="No tasks found..." />
           </template>
         </div>

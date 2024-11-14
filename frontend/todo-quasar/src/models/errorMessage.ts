@@ -4,6 +4,7 @@ export enum ErrorMessage {
   dateNotSelected = 'Date or time is not selected.',
   failedAdd = 'Failed to add task!',
   failedLoad = 'Failed to load tasks!',
+  failedUpdate = 'Failed to update tasks!',
   failedDelete = 'Failed to delete task!',
   failedDeleteSelected = 'Failed to delete selected tasks!',
   failedSetCompleted = 'Failed to set completed to selected task!',

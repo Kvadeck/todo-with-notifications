@@ -77,24 +77,6 @@ export const useTasksStore = defineStore('tasks', {
         this.error = ErrorMessage.failedSetCompleted + ' ' + error;
       }
     },
-    reset() {
-      this.status = '';
-      this.error = '';
-    },
-    addSelectedTask(id: number | undefined) {
-      if (!id) {
-        this.error = ErrorMessage.failedAddSelected;
-        return;
-      }
-      if (this.selectedTasks.includes(id)) {
-        this.selectedTasks = this.selectedTasks.filter((item) => item !== id);
-      } else {
-        this.selectedTasks.push(id);
-      }
-    },
-    resetSelectedTasks() {
-      this.selectedTasks = [];
-    },
     async checkNoticeTime() {
       const nowISO = new Date().toISOString().slice(0, 16);
 
@@ -116,6 +98,35 @@ export const useTasksStore = defineStore('tasks', {
           return;
         }
       }
+    },
+    async update(tasks: Task[], startPosition: number) {
+      if (tasks) {
+        this.tasks.splice(startPosition, tasks.length, ...tasks);
+        try {
+          // TODO: Check how to replace old table with another or replace by need it data
+          // await db.tasks.put(this.tasks)
+        } catch (error) {
+          this.error = ErrorMessage.failedUpdate + ' ' + error;
+        }
+      }
+    },
+    reset() {
+      this.status = '';
+      this.error = '';
+    },
+    addSelectedTask(id: number | undefined) {
+      if (!id) {
+        this.error = ErrorMessage.failedAddSelected;
+        return;
+      }
+      if (this.selectedTasks.includes(id)) {
+        this.selectedTasks = this.selectedTasks.filter((item) => item !== id);
+      } else {
+        this.selectedTasks.push(id);
+      }
+    },
+    resetSelectedTasks() {
+      this.selectedTasks = [];
     },
     resetIsNotice() {
       this.isNotice = null;
