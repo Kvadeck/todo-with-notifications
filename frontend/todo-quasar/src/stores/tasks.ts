@@ -101,10 +101,10 @@ export const useTasksStore = defineStore('tasks', {
     },
     async update(tasks: Task[], startPosition: number) {
       if (tasks) {
-        this.tasks.splice(startPosition, tasks.length, ...tasks);
         try {
-          // TODO: Check how to replace old table with another or replace by need it data
-          // await db.tasks.put(this.tasks)
+          this.tasks.splice(startPosition, tasks.length, ...tasks);
+          const serializedTasks = JSON.parse(JSON.stringify(this.tasks));
+          await db.tasks.bulkPut(serializedTasks);
         } catch (error) {
           this.error = ErrorMessage.failedUpdate + ' ' + error;
         }
