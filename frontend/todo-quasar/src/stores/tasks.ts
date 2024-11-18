@@ -39,7 +39,7 @@ export const useTasksStore = defineStore('tasks', {
     async loadTasks() {
       try {
         this.isLoading = true;
-        this.tasks = await db.tasks.toArray();
+        this.tasks = await db.tasks.orderBy('id').toArray();
       } catch (error) {
         this.error = ErrorMessage.failedLoad + ' ' + error;
       } finally {
@@ -65,7 +65,7 @@ export const useTasksStore = defineStore('tasks', {
       }
     },
     async toggleCompleted(id: number) {
-      if (!id) {
+      if (id == null) {
         this.error = ErrorMessage.failedSetCompleted;
         return;
       }
@@ -94,20 +94,33 @@ export const useTasksStore = defineStore('tasks', {
             }
           }
         } catch (error) {
-          this.error = ErrorMessage.notExist;
+          this.error = ErrorMessage.notExist + ' ' + error;
           return;
         }
       }
     },
-    async update(tasks: Task[], startPosition: number) {
-      if (tasks) {
-        try {
-          this.tasks.splice(startPosition, tasks.length, ...tasks);
-          const serializedTasks = JSON.parse(JSON.stringify(this.tasks));
-          await db.tasks.bulkPut(serializedTasks);
-        } catch (error) {
-          this.error = ErrorMessage.failedUpdate + ' ' + error;
-        }
+    async updatePosition(tasks: Task[], startPosition: number) {
+      if (!tasks || tasks.length === 0) {
+        return;
+      }
+      try {
+        this.tasks.splice(startPosition, tasks.length, ...tasks);
+
+        await db.tasks.clear();
+
+        const taskPromises = this.tasks.map((task, index) =>
+          db.tasks.add({
+            id: index,
+            taskName: task.taskName,
+            date: task.date,
+            category: task.category,
+            completed: task.completed,
+          }),
+        );
+        await Promise.all(taskPromises);
+        await this.loadTasks();
+      } catch (error) {
+        this.error = ErrorMessage.failedUpdatePosition + ' ' + error;
       }
     },
     reset() {
