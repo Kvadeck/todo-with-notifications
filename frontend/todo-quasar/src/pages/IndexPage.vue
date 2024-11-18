@@ -1,4 +1,3 @@
-<!-- TODO: Подумать над дизайном состояния выполненной задачи в виде штампа выполнено и.т.д. -->
 <!-- TODO: Подумать над тем как можно показывать несколько уведомлений по очереди в одно и тоже время -->
 <!-- TODO: Добавить возможность темный темы -->
 <!-- TODO: Подумать как можно изменять порядок задач с других страниц в начало -->
@@ -45,19 +44,17 @@ const start = computed(() => {
   return (currentPage.value - 1) * ELEMENTS_ON_PAGE;
 });
 
-const paginatedItems = computed(
-  {
-    get() {
-      const end = start.value + ELEMENTS_ON_PAGE;
-      return !tasks.value.slice(start.value, end).length
-        ? tasks.value
-        : tasks.value.slice(start.value, end);
-    },
-    set(newTasks) {
-      store.updatePosition(newTasks, start.value);
-    },
-  }
-);
+const paginatedItems = computed({
+  get() {
+    const end = start.value + ELEMENTS_ON_PAGE;
+    return !tasks.value.slice(start.value, end).length
+      ? tasks.value
+      : tasks.value.slice(start.value, end);
+  },
+  set(newTasks) {
+    store.updatePosition(newTasks, start.value);
+  },
+});
 
 onMounted(async () => {
   await store.loadTasks();

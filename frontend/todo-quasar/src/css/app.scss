@@ -21,3 +21,9 @@
 .completed {
   opacity: 0.5;
 }
+.completed-border {
+  border-left: 2px solid var(--q-negative);
+}
+.uncompleted-border {
+  border-left: 2px solid var(--q-positive);
+}

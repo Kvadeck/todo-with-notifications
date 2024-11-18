@@ -19,12 +19,15 @@ const { executeTaskAction } = useTaskAction(),
   checked = ref(false),
   markedText = computed(() => {
     return props.task.completed ? 'uncompleted' : 'completed';
-  });
+  }),
+  completedBorder = computed(() =>
+    props.task.completed ? 'completed-border' : 'uncompleted-border',
+  );
 </script>
 
 <template>
   <div class="col-12" :class="{ completed: task.completed }">
-    <q-card flat bordered>
+    <q-card :class="completedBorder" flat bordered>
       <q-card-section>
         <div class="task-card-inner">
           <q-checkbox
@@ -34,10 +37,7 @@ const { executeTaskAction } = useTaskAction(),
           />
           <div class="row items-center no-wrap">
             <div class="col">
-              <div
-                class="text-h6 flex"
-                :class="{ 'text-strike': task.completed }"
-              >
+              <div class="text-h6 flex">
                 {{ task.taskName }}
               </div>
             </div>
