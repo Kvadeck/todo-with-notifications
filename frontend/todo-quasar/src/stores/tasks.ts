@@ -128,7 +128,7 @@ export const useTasksStore = defineStore('tasks', {
       this.error = '';
     },
     addSelectedTask(id: number | undefined) {
-      if (!id) {
+      if (id == null) {
         this.error = ErrorMessage.failedAddSelected;
         return;
       }
