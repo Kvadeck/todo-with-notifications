@@ -102,12 +102,14 @@ export const useTasksStore = defineStore('tasks', {
     async showDialogForTask(task: Task) {
       this.isNotice = true;
       this.noticeData = task;
-      // Wait until dialog is closed
-      await new Promise((resolve) => {
+
+      // TODO: It can be reworked with event
+      await new Promise<void>((resolve) => {
+        // Wait until dialog is closed
         const interval = setInterval(() => {
           if (!this.isNotice) {
             clearInterval(interval);
-            resolve('completed');
+            resolve();
           }
         }, 100);
       });
