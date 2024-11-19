@@ -59,6 +59,7 @@ export const useTasksStore = defineStore('tasks', {
         for (const id of tasksIds) {
           await db.tasks.delete(id);
         }
+        this.tasks = await db.tasks.toArray();
         this.status = StatusMessage.selectedDeleted;
       } catch (error) {
         this.error = ErrorMessage.failedDeleteSelected + ' ' + error;
@@ -85,12 +86,11 @@ export const useTasksStore = defineStore('tasks', {
         try {
           if (taskTimeISO === nowISO) {
             const task = await db.tasks.get(taskItem.id);
-
             if (task) {
               await db.tasks.update(task.id, { ...task, completed: true });
               this.tasks = await db.tasks.toArray();
-              this.isNotice = true;
-              this.noticeData = task;
+
+              await this.showDialogForTask(task);
             }
           }
         } catch (error) {
@@ -98,6 +98,19 @@ export const useTasksStore = defineStore('tasks', {
           return;
         }
       }
+    },
+    async showDialogForTask(task: Task) {
+      this.isNotice = true;
+      this.noticeData = task;
+      // Wait until dialog is closed
+      await new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (!this.isNotice) {
+            clearInterval(interval);
+            resolve('completed');
+          }
+        }, 100);
+      });
     },
     async updatePosition(tasks: Task[], startPosition: number) {
       if (!tasks || tasks.length === 0) {
