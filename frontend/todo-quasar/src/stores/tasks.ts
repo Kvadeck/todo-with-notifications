@@ -30,8 +30,10 @@ export const useTasksStore = defineStore('tasks', {
   actions: {
     async addTask(data: Task) {
       try {
-        const id = await db.tasks.add({ ...data, completed: false });
-        this.status = StatusMessage.taskAdded + id;
+        await db.transaction('rw', db.tasks, async () => {
+          const id = await db.tasks.add({ ...data, completed: false });
+          this.status = StatusMessage.taskAdded + id;
+        });
       } catch (error) {
         this.error = ErrorMessage.failedAdd + ' ' + error;
       }
@@ -39,7 +41,9 @@ export const useTasksStore = defineStore('tasks', {
     async loadTasks() {
       try {
         this.isLoading = true;
-        this.tasks = await db.tasks.orderBy('id').toArray();
+        await db.transaction('r', db.tasks, async () => {
+          this.tasks = await db.tasks.orderBy('id').toArray();
+        });
       } catch (error) {
         this.error = ErrorMessage.failedLoad + ' ' + error;
       } finally {
@@ -48,18 +52,20 @@ export const useTasksStore = defineStore('tasks', {
     },
     async deleteTask(id: number) {
       try {
-        await db.tasks.delete(id);
-        this.status = StatusMessage.taskDeleted + id;
+        await db.transaction('rw', db.tasks, async () => {
+          await db.tasks.delete(id);
+          this.status = StatusMessage.taskDeleted + id;
+        });
       } catch (error) {
         this.error = ErrorMessage.failedDelete + ' ' + error;
       }
     },
     async deleteSelectedTasks(tasksIds: number[]) {
       try {
-        for (const id of tasksIds) {
-          await db.tasks.delete(id);
-        }
-        this.tasks = await db.tasks.toArray();
+        await db.transaction('rw', db.tasks, async () => {
+          await Promise.all(tasksIds.map((id) => db.tasks.delete(id)));
+          this.tasks = await db.tasks.toArray();
+        });
         this.status = StatusMessage.selectedDeleted;
       } catch (error) {
         this.error = ErrorMessage.failedDeleteSelected + ' ' + error;
@@ -71,32 +77,39 @@ export const useTasksStore = defineStore('tasks', {
         return;
       }
       try {
-        const task = await db.tasks.get(id);
-        await db.tasks.update(id, { ...task, completed: !task?.completed });
+        await db.transaction('rw', db.tasks, async () => {
+          const task = await db.tasks.get(id);
+          if (!task) {
+            throw new Error(ErrorMessage.notExist);
+          }
+          await db.tasks.update(id, { completed: !task.completed });
+        });
         this.status = StatusMessage.taskUpdated;
       } catch (error) {
-        this.error = ErrorMessage.failedSetCompleted + ' ' + error;
+        this.error = `${ErrorMessage.failedSetCompleted} ${error}`;
       }
     },
     async checkNoticeTime() {
       const nowISO = new Date().toISOString().slice(0, 16);
-
-      for (const taskItem of this.tasksForNotice) {
-        const taskTimeISO = new Date(taskItem.date).toISOString().slice(0, 16);
-        try {
-          if (taskTimeISO === nowISO) {
-            const task = await db.tasks.get(taskItem.id);
-            if (task) {
-              await db.tasks.update(task.id, { ...task, completed: true });
-              this.tasks = await db.tasks.toArray();
-
-              await this.showDialogForTask(task);
+      try {
+        await db.transaction('rw', db.tasks, async () => {
+          for (const taskItem of this.tasksForNotice) {
+            const taskTimeISO = new Date(taskItem.date)
+              .toISOString()
+              .slice(0, 16);
+            if (taskTimeISO === nowISO) {
+              const task = await db.tasks.get(taskItem.id);
+              if (task) {
+                await db.tasks.update(task.id, { ...task, completed: true });
+                this.tasks = await db.tasks.toArray();
+                await this.showDialogForTask(task);
+              }
             }
           }
-        } catch (error) {
-          this.error = ErrorMessage.notExist + ' ' + error;
-          return;
-        }
+        });
+      } catch (error) {
+        this.error = ErrorMessage.notExist + ' ' + error;
+        return;
       }
     },
     async showDialogForTask(task: Task) {
@@ -120,20 +133,20 @@ export const useTasksStore = defineStore('tasks', {
       }
       try {
         this.tasks.splice(startPosition, tasks.length, ...tasks);
-
-        await db.tasks.clear();
-
-        const taskPromises = this.tasks.map((task, index) =>
-          db.tasks.add({
-            id: index,
-            taskName: task.taskName,
-            date: task.date,
-            category: task.category,
-            completed: task.completed,
-          }),
-        );
-        await Promise.all(taskPromises);
-        await this.loadTasks();
+        await db.transaction('rw', db.tasks, async () => {
+          await db.tasks.clear();
+          const taskPromises = this.tasks.map((task, index) =>
+            db.tasks.add({
+              id: index,
+              taskName: task.taskName,
+              date: task.date,
+              category: task.category,
+              completed: task.completed,
+            }),
+          );
+          await Promise.all(taskPromises);
+          await this.loadTasks();
+        });
       } catch (error) {
         this.error = ErrorMessage.failedUpdatePosition + ' ' + error;
       }
