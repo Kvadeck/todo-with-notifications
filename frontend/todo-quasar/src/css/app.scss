@@ -27,3 +27,9 @@
 .uncompleted-border {
   border-left: 2px solid var(--q-positive);
 }
+.pin-icon {
+  right: 5px;
+  top: 7px;
+  z-index: 10;
+  cursor: pointer;
+}

@@ -3,4 +3,6 @@ export enum StatusMessage {
   taskDeleted = 'Task successfully deleted with ID:',
   selectedDeleted = 'Selected tasks successfully deleted.',
   taskUpdated = 'Task successfully updated.',
+  taskPinned = 'Task successfully pinned.',
+  taskMoved = 'Task successfully moved.',
 }

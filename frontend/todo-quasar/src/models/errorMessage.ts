@@ -12,4 +12,5 @@ export enum ErrorMessage {
   unknownError = 'Something goes wrong...',
   notExist = 'Task with id is not exist!',
   failedUpdatePosition = 'Failed to update task position!',
+  failedPinTask = 'Failed to pin task!',
 }

@@ -8,6 +8,7 @@ const store = useTasksStore();
 
 interface Props {
   task: Task;
+  currentPage: number;
 }
 const { executeTaskAction } = useTaskAction(),
   props = defineProps<Props>(),
@@ -22,12 +23,28 @@ const { executeTaskAction } = useTaskAction(),
   }),
   completedBorder = computed(() =>
     props.task.completed ? 'completed-border' : 'uncompleted-border',
-  );
+  ),
+  isFirstPage = computed(() => {
+    return props.currentPage === 1;
+  });
+
+function pinTask(task: Task) {
+  executeTaskAction(store.pinTask, task);
+}
 </script>
 
 <template>
   <div class="col-12" :class="{ completed: task.completed }">
     <q-card :class="completedBorder" flat bordered>
+      <q-icon
+        class="absolute pin-icon"
+        v-if="!isFirstPage"
+        color="grey-7"
+        name="fa-solid fa-thumbtack"
+        @click="pinTask(task)"
+      >
+        <q-tooltip :delay="1000" :offset="[0, 10]">Pin to first page</q-tooltip>
+      </q-icon>
       <q-card-section>
         <div class="task-card-inner">
           <q-checkbox

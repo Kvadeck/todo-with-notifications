@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 
-import { Task, db } from '../services/db';
+import { db, Task } from '../services/db';
 import { StatusMessage } from 'src/models/statusMessage';
 import { ErrorMessage } from 'src/models/errorMessage';
 import { ELEMENTS_ON_PAGE } from 'src/constants';
@@ -14,6 +14,7 @@ export const useTasksStore = defineStore('tasks', {
     selectedTasks: [] as number[],
     isNotice: null as boolean | null,
     noticeData: null as Task | null,
+    onDialogClose: null as (() => void) | null,
   }),
   getters: {
     tasksForNotice(): Task[] {
@@ -92,63 +93,75 @@ export const useTasksStore = defineStore('tasks', {
     async checkNoticeTime() {
       const nowISO = new Date().toISOString().slice(0, 16);
       try {
-        await db.transaction('rw', db.tasks, async () => {
-          for (const taskItem of this.tasksForNotice) {
-            const taskTimeISO = new Date(taskItem.date)
-              .toISOString()
-              .slice(0, 16);
-            if (taskTimeISO === nowISO) {
-              const task = await db.tasks.get(taskItem.id);
-              if (task) {
-                await db.tasks.update(task.id, { ...task, completed: true });
-                this.tasks = await db.tasks.toArray();
-                await this.showDialogForTask(task);
-              }
+        for (const taskItem of this.tasksForNotice) {
+          const taskTimeISO = new Date(taskItem.date)
+            .toISOString()
+            .slice(0, 16);
+
+          if (taskTimeISO === nowISO) {
+            const task = await db.tasks.get(taskItem.id);
+
+            await db.transaction('rw', db.tasks, async () => {
+              await db.tasks.update(task?.id, { ...task, completed: true });
+            });
+
+            this.tasks = await db.tasks.toArray();
+
+            if (task) {
+              await this.showDialogForTask(task);
             }
           }
-        });
+        }
       } catch (error) {
         this.error = ErrorMessage.notExist + ' ' + error;
         return;
       }
     },
-    async showDialogForTask(task: Task) {
+    async showDialogForTask(task: Task): Promise<void> {
       this.isNotice = true;
       this.noticeData = task;
 
-      // TODO: It can be reworked with event
-      await new Promise<void>((resolve) => {
-        // Wait until dialog is closed
-        const interval = setInterval(() => {
-          if (!this.isNotice) {
-            clearInterval(interval);
-            resolve();
-          }
-        }, 100);
+      return new Promise((resolve) => {
+        this.onDialogClose = resolve;
       });
     },
-    async updatePosition(tasks: Task[], startPosition: number) {
-      if (!tasks || tasks.length === 0) {
+    async refreshDbTasks(tasks: Task[]) {
+      await db.transaction('rw', db.tasks, async () => {
+        await db.tasks.clear();
+        const taskPromises = tasks.map((task, index) =>
+          db.tasks.add({
+            id: index,
+            taskName: task.taskName,
+            date: task.date,
+            category: task.category,
+            completed: task.completed,
+          }),
+        );
+        await Promise.all(taskPromises);
+      });
+    },
+    async updatePosition(tasks: { newTasks: Task[]; startPosition: number }) {
+      const { newTasks, startPosition } = tasks;
+
+      if (!newTasks || newTasks.length === 0) {
         return;
       }
       try {
-        this.tasks.splice(startPosition, tasks.length, ...tasks);
-        await db.transaction('rw', db.tasks, async () => {
-          await db.tasks.clear();
-          const taskPromises = this.tasks.map((task, index) =>
-            db.tasks.add({
-              id: index,
-              taskName: task.taskName,
-              date: task.date,
-              category: task.category,
-              completed: task.completed,
-            }),
-          );
-          await Promise.all(taskPromises);
-          await this.loadTasks();
-        });
+        this.tasks.splice(startPosition, newTasks.length, ...newTasks);
+        await this.refreshDbTasks(this.tasks);
+        this.status = StatusMessage.taskMoved;
       } catch (error) {
         this.error = ErrorMessage.failedUpdatePosition + ' ' + error;
+      }
+    },
+    async pinTask(task: Task) {
+      try {
+        this.tasks = this.tasks.filter((item) => item.id !== task.id);
+        this.tasks.unshift({ ...task });
+        await this.refreshDbTasks(this.tasks);
+        this.status = StatusMessage.taskPinned;
+      } catch (error) {
+        this.error = ErrorMessage.failedPinTask + ' ' + error;
       }
     },
     reset() {
@@ -170,6 +183,11 @@ export const useTasksStore = defineStore('tasks', {
       this.selectedTasks = [];
     },
     resetIsNotice() {
+      if (this.onDialogClose) {
+        this.onDialogClose();
+        this.onDialogClose = null;
+      }
+
       this.isNotice = null;
       this.noticeData = null;
     },

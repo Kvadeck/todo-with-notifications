@@ -1,9 +1,10 @@
-<!-- TODO: Обернуть в транзакцию чтение и запись indexDB -->
-<!-- TODO: Отрефакторить способ показа уведомление в одно и тоже время -->
 <!-- TODO: Подумать как можно изменять порядок задач с других страниц в начало -->
 <!-- TODO: Добавить возможность темный темы -->
 <!-- TODO: Добавить интернационализацию -->
-<!-- TODO: Придумать возможность как можно отменять удаление по одному или по множеству -->
+<!-- TODO: Придумать возможность как можно отменять удаление по одному и множеству -->
+<!-- TODO: Обновлять состояние по умолчанию даты и времени для полей инпута когда изменяется массив с задачами -->
+<!-- TODO: Посмотреть чтобы все акционы из стора были с помощью композабла -->
+<!-- TODO: Не работает перетаскивание не на первой странице пагинации -->
 
 <script setup lang="ts">
 import { useTasksStore } from 'stores/tasks';
@@ -16,8 +17,10 @@ import Spinner from 'components/ui/LSpinner.vue';
 import NoticeDialog from 'components/ui/NoticeDialog.vue';
 import { ELEMENTS_ON_PAGE } from 'src/constants';
 import draggable from 'vuedraggable';
+import { useTaskAction } from 'src/composables/useTaskAction';
 
 const store = useTasksStore();
+const { executeTaskAction } = useTaskAction();
 
 const error = computed(() => store.error),
   isLoading = computed(() => store.isLoading),
@@ -54,7 +57,10 @@ const paginatedItems = computed({
       : tasks.value.slice(start.value, end);
   },
   set(newTasks) {
-    store.updatePosition(newTasks, start.value);
+    executeTaskAction(store.updatePosition, {
+      newTasks,
+      startValue: start.value,
+    });
   },
 });
 
@@ -87,11 +93,11 @@ defineOptions({
                 handle=".handle"
               >
                 <template #item="{ element }">
-                  <task-card :task="element" />
+                  <task-card :currentPage="currentPage" :task="element" />
                 </template>
               </draggable>
               <div
-                class="flex justify-center full-width q-mt-sm"
+                class="flex justify-center full-width q-my-sm"
                 v-if="isPagination"
               >
                 <q-pagination
