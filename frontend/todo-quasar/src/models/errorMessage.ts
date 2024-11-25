@@ -13,4 +13,5 @@ export enum ErrorMessage {
   notExist = 'Task with id is not exist!',
   failedUpdatePosition = 'Failed to update task position!',
   failedPinTask = 'Failed to pin task!',
+  failedRefresh = 'Failed to refresh tasks!',
 }

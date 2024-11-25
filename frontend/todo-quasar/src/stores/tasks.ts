@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-
 import { db, Task } from '../services/db';
 import { StatusMessage } from 'src/models/statusMessage';
 import { ErrorMessage } from 'src/models/errorMessage';
@@ -126,28 +125,34 @@ export const useTasksStore = defineStore('tasks', {
       });
     },
     async refreshDbTasks(tasks: Task[]) {
-      await db.transaction('rw', db.tasks, async () => {
-        await db.tasks.clear();
-        const taskPromises = tasks.map((task, index) =>
-          db.tasks.add({
-            id: index,
-            taskName: task.taskName,
-            date: task.date,
-            category: task.category,
-            completed: task.completed,
-          }),
-        );
-        await Promise.all(taskPromises);
-      });
+      try {
+        await db.transaction('rw', db.tasks, async () => {
+          await db.tasks.clear();
+          const taskPromises = tasks.map((task, index) =>
+            db.tasks.add({
+              id: index,
+              taskName: task.taskName,
+              date: task.date,
+              category: task.category,
+              completed: task.completed,
+            }),
+          );
+          await Promise.all(taskPromises);
+        });
+      } catch (error) {
+        this.error = ErrorMessage.failedRefresh + ' ' + error;
+      }
     },
-    async updatePosition(tasks: { newTasks: Task[]; startPosition: number }) {
-      const { newTasks, startPosition } = tasks;
-
-      if (!newTasks || newTasks.length === 0) {
+    async updatePosition(tasks: { newTasks: Task[]; startValue: number }) {
+      if (!tasks.newTasks || tasks.newTasks.length === 0) {
         return;
       }
       try {
-        this.tasks.splice(startPosition, newTasks.length, ...newTasks);
+        this.tasks.splice(
+          tasks.startValue,
+          tasks.newTasks.length,
+          ...tasks.newTasks,
+        );
         await this.refreshDbTasks(this.tasks);
         this.status = StatusMessage.taskMoved;
       } catch (error) {
