@@ -43,7 +43,7 @@ function pinTask(task: Task) {
         name="fa-solid fa-thumbtack"
         @click="pinTask(task)"
       >
-        <q-tooltip :delay="1000" :offset="[0, 10]">Pin to first page</q-tooltip>
+        <q-tooltip :delay="500" :offset="[0, 10]">Pin to first page</q-tooltip>
       </q-icon>
       <q-card-section>
         <div class="task-card-inner">
@@ -61,18 +61,18 @@ function pinTask(task: Task) {
             <div class="col-auto">
               <div class="flex items-center">
                 <q-icon
-                  class="handle q-px-sm cursor-pointer"
+                  class="handle q-px-sm move-icon"
                   color="grey-7"
                   name="fa fa-bars"
                   size="20px"
-                />
+                ></q-icon>
                 <q-btn color="grey-7" round flat icon="more_vert">
                   <q-menu cover auto-close>
                     <q-list>
                       <q-item
                         clickable
                         @click="
-                          executeTaskAction(store.toggleCompleted, task.id)
+                          executeTaskAction(store.toggleCompleted, task.id, true)
                         "
                       >
                         <q-item-section>
@@ -80,7 +80,7 @@ function pinTask(task: Task) {
                         </q-item-section>
                       </q-item>
                       <q-item
-                        @click="executeTaskAction(store.deleteTask, task.id)"
+                        @click="executeTaskAction(store.deleteTask, task.id, true)"
                         clickable
                       >
                         <q-item-section>Remove Task</q-item-section>

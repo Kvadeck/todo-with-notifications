@@ -12,44 +12,48 @@ const { executeTaskAction } = useTaskAction(),
   time = ref(nowDateOrTime('time')),
   store = useTasksStore();
 
-function onSubmit() {
+function setDateTimeInputsToNow() {
+  date.value = nowDateOrTime('date');
+  time.value = nowDateOrTime('time');
+}
+
+function validateTaskInput(): boolean {
   const selectedDateTime =
-      date.value && time.value
-        ? new Date(`${date.value}T${time.value}:00`)
-        : null,
-    now = new Date();
+    date.value && time.value
+      ? new Date(`${date.value}T${time.value}:00`)
+      : null;
+  const now = new Date();
 
   if (selectedDateTime && selectedDateTime < now) {
     errorMessage(ErrorMessage.dateInFuture);
-    return;
+    return false;
   }
-
   if (!time.value || !date.value) {
     errorMessage(ErrorMessage.dateNotSelected);
-    return;
+    return false;
   }
-
   if (!category.value.length) {
     errorMessage(ErrorMessage.selectCategory);
-    return;
+    return false;
   }
+  return true;
+}
+
+function onSubmit() {
+  if (!validateTaskInput()) return;
 
   executeTaskAction(store.addTask, {
     taskName: task_name.value,
     category: JSON.stringify(category.value),
     date: new Date(`${date.value}T${time.value}:00`),
-  });
-
-  task_name.value = '';
-  date.value = '';
-  time.value = '';
+  }, true);
+  onReset();
 }
 
 function onReset() {
   task_name.value = '';
   category.value = ['life'];
-  date.value = nowDateOrTime('date');
-  time.value = nowDateOrTime('time');
+  setDateTimeInputsToNow();
 }
 </script>
 <template>
@@ -57,7 +61,7 @@ function onReset() {
     <q-card class="form-card">
       <q-card-section>
         <div class="text-h6 q-pb-md">Write your task:</div>
-        <q-form @submit="onSubmit" @reset="onReset">
+        <q-form @submit.prevent="onSubmit" @reset="onReset">
           <q-input
             v-model="task_name"
             outlined
