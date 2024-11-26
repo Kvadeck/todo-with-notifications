@@ -16,7 +16,7 @@ function deleteSelectedTasks() {
     errorMessage(ErrorMessage.selectOneTask);
     return;
   }
-  executeTaskAction(store.deleteSelectedTasks, selected.value);
+  executeTaskAction(store.deleteSelectedTasks, selected.value, true);
   store.resetSelectedTasks();
 }
 

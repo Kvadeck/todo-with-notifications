@@ -29,6 +29,10 @@ export const useTasksStore = defineStore('tasks', {
   },
   actions: {
     async addTask(data: Task) {
+      if (data == null) {
+        this.error = ErrorMessage.failedAdd;
+        return;
+      }
       try {
         await db.transaction('rw', db.tasks, async () => {
           const id = await db.tasks.add({ ...data, completed: false });
@@ -51,6 +55,10 @@ export const useTasksStore = defineStore('tasks', {
       }
     },
     async deleteTask(id: number) {
+      if (id == null) {
+        this.error = ErrorMessage.failedDelete;
+        return;
+      }
       try {
         await db.transaction('rw', db.tasks, async () => {
           await db.tasks.delete(id);
@@ -61,10 +69,13 @@ export const useTasksStore = defineStore('tasks', {
       }
     },
     async deleteSelectedTasks(tasksIds: number[]) {
+      if (tasksIds == null) {
+        this.error = ErrorMessage.failedDeleteSelected;
+        return;
+      }
       try {
         await db.transaction('rw', db.tasks, async () => {
           await Promise.all(tasksIds.map((id) => db.tasks.delete(id)));
-          this.tasks = await db.tasks.toArray();
         });
         this.status = StatusMessage.selectedDeleted;
       } catch (error) {
@@ -73,7 +84,7 @@ export const useTasksStore = defineStore('tasks', {
     },
     async toggleCompleted(id: number) {
       if (id == null) {
-        this.error = ErrorMessage.failedSetCompleted;
+        this.error = ErrorMessage.failedToggleCompleted;
         return;
       }
       try {
@@ -86,7 +97,7 @@ export const useTasksStore = defineStore('tasks', {
         });
         this.status = StatusMessage.taskUpdated;
       } catch (error) {
-        this.error = `${ErrorMessage.failedSetCompleted} ${error}`;
+        this.error = `${ErrorMessage.failedToggleCompleted} ${error}`;
       }
     },
     async checkNoticeTime() {
@@ -144,7 +155,8 @@ export const useTasksStore = defineStore('tasks', {
       }
     },
     async updatePosition(tasks: { newTasks: Task[]; startValue: number }) {
-      if (!tasks.newTasks || tasks.newTasks.length === 0) {
+      if (!tasks.newTasks || tasks.newTasks.length === 0 || tasks.startValue == null ) {
+        this.error = ErrorMessage.failedUpdatePosition;
         return;
       }
       try {
@@ -160,6 +172,10 @@ export const useTasksStore = defineStore('tasks', {
       }
     },
     async pinTask(task: Task) {
+      if (task == null) {
+        this.error = ErrorMessage.failedPinTask;
+        return;
+      }
       try {
         this.tasks = this.tasks.filter((item) => item.id !== task.id);
         this.tasks.unshift({ ...task });

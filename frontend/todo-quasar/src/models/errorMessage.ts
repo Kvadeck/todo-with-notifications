@@ -6,7 +6,7 @@ export enum ErrorMessage {
   failedLoad = 'Failed to load tasks!',
   failedDelete = 'Failed to delete task!',
   failedDeleteSelected = 'Failed to delete selected tasks!',
-  failedSetCompleted = 'Failed to set completed to selected task!',
+  failedToggleCompleted = 'Failed toggle completed to selected task!',
   failedAddSelected = 'Failed to add selected task!',
   selectOneTask = 'You need to select at least one task.',
   unknownError = 'Something goes wrong...',
