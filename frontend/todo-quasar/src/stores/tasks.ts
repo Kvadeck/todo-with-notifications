@@ -110,16 +110,15 @@ export const useTasksStore = defineStore('tasks', {
 
           if (taskTimeISO === nowISO) {
             const task = await db.tasks.get(taskItem.id);
-
-            await db.transaction('rw', db.tasks, async () => {
-              await db.tasks.update(task?.id, { ...task, completed: true });
-            });
-
-            this.tasks = await db.tasks.toArray();
-
-            if (task) {
-              await this.showDialogForTask(task);
+            if (task == null) {
+              this.error = ErrorMessage.notExist;
+              return;
             }
+            await db.transaction('rw', db.tasks, async () => {
+              await db.tasks.update(task.id, { ...task, completed: true });
+            });
+            this.tasks = await db.tasks.toArray();
+            await this.showDialogForTask(task);
           }
         }
       } catch (error) {
@@ -155,7 +154,11 @@ export const useTasksStore = defineStore('tasks', {
       }
     },
     async updatePosition(tasks: { newTasks: Task[]; startValue: number }) {
-      if (!tasks.newTasks || tasks.newTasks.length === 0 || tasks.startValue == null ) {
+      if (
+        !tasks.newTasks ||
+        tasks.newTasks.length === 0 ||
+        tasks.startValue == null
+      ) {
         this.error = ErrorMessage.failedUpdatePosition;
         return;
       }

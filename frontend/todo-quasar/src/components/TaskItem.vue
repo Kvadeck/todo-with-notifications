@@ -72,7 +72,11 @@ function pinTask(task: Task) {
                       <q-item
                         clickable
                         @click="
-                          executeTaskAction(store.toggleCompleted, task.id, true)
+                          executeTaskAction(
+                            store.toggleCompleted,
+                            task.id,
+                            true,
+                          )
                         "
                       >
                         <q-item-section>
@@ -80,7 +84,9 @@ function pinTask(task: Task) {
                         </q-item-section>
                       </q-item>
                       <q-item
-                        @click="executeTaskAction(store.deleteTask, task.id, true)"
+                        @click="
+                          executeTaskAction(store.deleteTask, task.id, true)
+                        "
                         clickable
                       >
                         <q-item-section>Remove Task</q-item-section>

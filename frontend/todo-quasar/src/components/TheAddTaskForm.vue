@@ -42,11 +42,15 @@ function validateTaskInput(): boolean {
 function onSubmit() {
   if (!validateTaskInput()) return;
 
-  executeTaskAction(store.addTask, {
-    taskName: task_name.value,
-    category: JSON.stringify(category.value),
-    date: new Date(`${date.value}T${time.value}:00`),
-  }, true);
+  executeTaskAction(
+    store.addTask,
+    {
+      taskName: task_name.value,
+      category: JSON.stringify(category.value),
+      date: new Date(`${date.value}T${time.value}:00`),
+    },
+    true,
+  );
   onReset();
 }
 
