@@ -1,23 +1,31 @@
 <script setup lang="ts">
 import { useTasksStore } from 'stores/tasks';
 import { computed } from 'vue';
-import { errorMessage } from 'src/utils/main';
+import { deleteMessage, errorMessage } from 'src/utils/main';
 import { ErrorMessage } from 'src/models/errorMessage';
-import { useTaskAction } from 'src/composables/useTaskAction';
+import { StatusMessage } from 'src/models/statusMessage';
 
 const store = useTasksStore(),
-  { executeTaskAction } = useTaskAction(),
-  selected = computed(() => store.selectedTasks);
+  selectedTasks = computed(() => store.selectedTasks);
+
+function loadSelectedTasks(): void {
+  store.resetSelectedTasks();
+  store.loadTasks();
+}
 
 function deleteSelectedTasks() {
   store.reset();
 
-  if (!selected.value.length) {
+  if (!selectedTasks.value.length) {
     errorMessage(ErrorMessage.selectOneTask);
     return;
   }
-  executeTaskAction(store.deleteSelectedTasks, selected.value, true);
-  store.resetSelectedTasks();
+
+  store.preDeleteSelectedTasks(selectedTasks.value);
+
+  deleteMessage(StatusMessage.selectedDeleted, loadSelectedTasks, () => {
+    store.deleteSelectedTasks(selectedTasks.value);
+  });
 }
 
 function refreshTasks() {

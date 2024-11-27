@@ -62,7 +62,6 @@ export const useTasksStore = defineStore('tasks', {
       try {
         await db.transaction('rw', db.tasks, async () => {
           await db.tasks.delete(id);
-          this.status = StatusMessage.taskDeleted + id;
         });
       } catch (error) {
         this.error = ErrorMessage.failedDelete + ' ' + error;
@@ -77,7 +76,7 @@ export const useTasksStore = defineStore('tasks', {
         await db.transaction('rw', db.tasks, async () => {
           await Promise.all(tasksIds.map((id) => db.tasks.delete(id)));
         });
-        this.status = StatusMessage.selectedDeleted;
+        this.resetSelectedTasks();
       } catch (error) {
         this.error = ErrorMessage.failedDeleteSelected + ' ' + error;
       }
@@ -214,6 +213,22 @@ export const useTasksStore = defineStore('tasks', {
 
       this.isNotice = null;
       this.noticeData = null;
+    },
+    preDeleteTask(id: number) {
+      if (id == null) {
+        this.error = ErrorMessage.failedDelete;
+        return;
+      }
+      this.tasks = this.tasks = this.tasks.filter((item) => item.id !== id);
+    },
+    preDeleteSelectedTasks(tasksIds: number[]) {
+      if (tasksIds == null) {
+        this.error = ErrorMessage.failedDeleteSelected;
+        return;
+      }
+      tasksIds.forEach((taskId) => {
+        this.tasks = this.tasks.filter((item) => item.id !== taskId);
+      });
     },
   },
 });

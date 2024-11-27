@@ -29,7 +29,6 @@ export function useTaskAction() {
       if (error.value) {
         errorMessage(error.value);
       } else {
-        // TODO: Set it when it need it.
         if (isLoad) {
           await store.loadTasks();
         }

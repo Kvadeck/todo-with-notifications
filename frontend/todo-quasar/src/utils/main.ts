@@ -1,5 +1,6 @@
 import { date } from 'quasar';
 import { Notify } from 'quasar';
+import { DELETE_MESSAGE_DURATION } from 'src/constants';
 
 export function nowDateOrTime(value: 'time' | 'date'): string | undefined {
   const timeStamp = Date.now();
@@ -14,7 +15,7 @@ export function errorMessage(message: string) {
   Notify.create({
     color: 'red-5',
     textColor: 'white',
-    icon: 'warning',
+    icon: 'error',
     position: 'top',
     message: message,
     progress: true,
@@ -29,5 +30,35 @@ export function successMessage(message: string) {
     position: 'top',
     message: message,
     progress: true,
+  });
+}
+
+export function deleteMessage(
+  message: string,
+  action: () => void,
+  onEnd: () => void,
+) {
+  const additionalTime = 1500;
+  const timeoutDuration = DELETE_MESSAGE_DURATION + additionalTime;
+
+  const timeoutId = setTimeout(async () => {
+    onEnd();
+  }, timeoutDuration);
+
+  const handleAction = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    action();
+  };
+
+  Notify.create({
+    type: 'warning',
+    position: 'top',
+    icon: 'warning',
+    message: message,
+    progress: true,
+    timeout: DELETE_MESSAGE_DURATION,
+    actions: [{ label: 'Recover', color: 'white', handler: handleAction }],
   });
 }

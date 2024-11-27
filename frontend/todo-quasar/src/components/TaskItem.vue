@@ -4,6 +4,8 @@ import { useTasksStore } from 'stores/tasks';
 import { useTaskAction } from 'src/composables/useTaskAction';
 import { computed, ref } from 'vue';
 import { date } from 'quasar';
+import { deleteMessage } from 'src/utils/main';
+import { StatusMessage } from 'src/models/statusMessage';
 const store = useTasksStore();
 
 interface Props {
@@ -30,6 +32,13 @@ const { executeTaskAction } = useTaskAction(),
 
 function pinTask(task: Task) {
   executeTaskAction(store.pinTask, task);
+}
+
+function deleteTask(id: number) {
+  store.preDeleteTask(id);
+  deleteMessage(StatusMessage.taskDeleted + id, store.loadTasks, () => {
+    store.deleteTask(id);
+  });
 }
 </script>
 
@@ -84,9 +93,8 @@ function pinTask(task: Task) {
                         </q-item-section>
                       </q-item>
                       <q-item
-                        @click="
-                          executeTaskAction(store.deleteTask, task.id, true)
-                        "
+                        v-if="task.id != null"
+                        @click="deleteTask(task.id)"
                         clickable
                       >
                         <q-item-section>Remove Task</q-item-section>
