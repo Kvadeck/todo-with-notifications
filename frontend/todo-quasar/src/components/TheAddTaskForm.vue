@@ -77,23 +77,18 @@ function onReset() {
           />
           <div class="text-h6 q-py-xs">Category:</div>
           <div class="q-pb-xs">
-            <q-checkbox
+            <q-toggle
               v-model="category"
-              val="life"
               label="Life"
               color="orange"
+              val="life"
             />
-            <q-checkbox
+            <q-toggle v-model="category" label="Work" color="red" val="work" />
+            <q-toggle
               v-model="category"
-              val="work"
-              label="Work"
-              color="red"
-            />
-            <q-checkbox
-              v-model="category"
-              val="family"
-              label="Family"
               color="cyan"
+              label="Family"
+              val="family"
             />
           </div>
           <div class="text-h6 q-py-xs">Notice time:</div>

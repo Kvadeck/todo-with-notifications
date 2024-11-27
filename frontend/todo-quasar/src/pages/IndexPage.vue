@@ -1,5 +1,6 @@
 <!-- TODO: Добавить возможность темный темы -->
 <!-- TODO: Добавить интернационализацию -->
+<!-- TODO: Выложить на Vercel -->
 
 <script setup lang="ts">
 import { useTasksStore } from 'stores/tasks';
