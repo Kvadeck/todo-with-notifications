@@ -6,16 +6,25 @@
           <div class="col-lg-7 col-md-9 col-12 flex justify-between">
             <div class="flex items-center">
               <header-icon />
-              <span class="q-px-xs">To-Do</span>
+              <span class="q-px-xs">TO-DO</span>
             </div>
-            <div>
+            <div class="flex items-center cursor-pointer q-gutter-md">
               <q-toggle
                 v-model="theme"
                 checked-icon="fa-regular fa-moon"
                 color="blue-grey-10"
                 unchecked-icon="fa-regular fa-sun"
               />
-              <q-toggle v-model="language" color="cyan" label="EN" />
+              <q-select
+                v-model="locale"
+                :options="localeOptions"
+                dense
+                borderless
+                emit-value
+                map-options
+                options-dense
+                style="min-width: 40px"
+              />
             </div>
           </div>
         </q-toolbar-title>
@@ -32,10 +41,18 @@ import HeaderIcon from 'components/ui/HeaderIcon.vue';
 import { useQuasar } from 'quasar';
 import { ref, watch } from 'vue';
 import { getLocalStorage, setLocalStorage } from 'src/utils/main';
+import { useI18n } from 'vue-i18n';
+
 const $q = useQuasar();
 
 const theme = ref(initialTheme());
-const language = ref(false);
+
+const localeOptions = ref([
+  { value: 'en-US', label: 'EN' },
+  { value: 'ru-RU', label: 'RU' },
+]);
+
+const { locale } = useI18n({ useScope: 'global' });
 
 watch(theme, () => {
   setLocalStorage('theme', theme.value);

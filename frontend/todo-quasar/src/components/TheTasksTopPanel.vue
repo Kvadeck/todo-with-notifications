@@ -42,7 +42,7 @@ function refreshTasks() {
           @click="refreshTasks"
           outline
           rounded
-          label="Refresh"
+          :label="$t('failed')"
           color="secondary"
         />
         <q-btn
