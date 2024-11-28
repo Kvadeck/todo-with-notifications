@@ -34,7 +34,7 @@ import { ref, watch } from 'vue';
 import { getLocalStorage, setLocalStorage } from 'src/utils/main';
 const $q = useQuasar();
 
-const theme = ref(getLocalStorage('theme', false));
+const theme = ref(initialTheme());
 const language = ref(false);
 
 watch(theme, () => {
@@ -42,7 +42,11 @@ watch(theme, () => {
   $q.dark.toggle();
 });
 
-$q.dark.set(getLocalStorage('theme', false));
+function initialTheme() {
+  const theme = getLocalStorage('theme', false);
+  $q.dark.set(theme);
+  return theme;
+}
 
 defineOptions({
   name: 'MainLayout',
