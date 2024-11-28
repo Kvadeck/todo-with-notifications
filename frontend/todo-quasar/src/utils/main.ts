@@ -62,3 +62,12 @@ export function deleteMessage(
     actions: [{ label: 'Recover', color: 'white', handler: handleAction }],
   });
 }
+
+export function setLocalStorage<T>(key: string, value: T): void {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+export function getLocalStorage<T>(key: string, defaultValue: T): T {
+  const value = localStorage.getItem(key);
+  return value ? (JSON.parse(value) as T) : defaultValue;
+}

@@ -12,7 +12,7 @@ const store = useTasksStore(),
   <q-dialog v-model="isNotice">
     <div v-if="noticeData" style="width: 700px; max-width: 80vw">
       <q-card>
-        <q-card-section class="bg-primary text-white">
+        <q-card-section class="dialog-title-bar text-white">
           <div class="text-h6">Completed</div>
         </q-card-section>
         <q-card-section>

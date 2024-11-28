@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header bordered>
       <q-toolbar class="text-white">
         <q-toolbar-title class="row justify-center">
           <div class="col-lg-7 col-md-9 col-12 flex justify-between">
@@ -15,17 +15,13 @@
                 color="blue-grey-10"
                 unchecked-icon="fa-regular fa-sun"
               />
-              <q-toggle
-                v-model="language"
-                color="cyan"
-                label="EN"
-              />
+              <q-toggle v-model="language" color="cyan" label="EN" />
             </div>
           </div>
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
-    <q-page-container class="bg-grey-3">
+    <q-page-container>
       <router-view />
     </q-page-container>
   </q-layout>
@@ -34,14 +30,19 @@
 <script setup lang="ts">
 import HeaderIcon from 'components/ui/HeaderIcon.vue';
 import { useQuasar } from 'quasar';
-import { ref } from 'vue';
-
+import { ref, watch } from 'vue';
+import { getLocalStorage, setLocalStorage } from 'src/utils/main';
 const $q = useQuasar();
 
-const theme = ref(false);
+const theme = ref(getLocalStorage('theme', false));
 const language = ref(false);
 
-console.log($q.dark.isActive);
+watch(theme, () => {
+  setLocalStorage('theme', theme.value);
+  $q.dark.toggle();
+});
+
+$q.dark.set(getLocalStorage('theme', false));
 
 defineOptions({
   name: 'MainLayout',

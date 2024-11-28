@@ -10,6 +10,19 @@
   padding: 0 20px;
   text-align: center;
 }
+.body--dark header,
+.body--dark .dialog-title-bar {
+  background: #000000;
+}
+
+.body--light .dialog-title-bar {
+  background: #1976d2;
+}
+
+.body--dark .side-wrapper {
+  background: #1d1d1d;
+}
+
 .task-card-inner {
   display: grid;
   grid-template-columns: 50px 1fr 0;
@@ -22,7 +35,7 @@
   opacity: 0.5;
 }
 .completed-border {
-  border-left: 2px solid var(--q-negative);
+  border-left: 2px solid #ef6c00;
 }
 .uncompleted-border {
   border-left: 2px solid var(--q-positive);
@@ -35,4 +48,7 @@
 }
 .move-icon {
   cursor: move;
+}
+.body--dark header {
+  background: #000;
 }
