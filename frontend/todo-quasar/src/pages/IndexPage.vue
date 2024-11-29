@@ -1,5 +1,5 @@
 <!-- TODO: Добавить интернационализацию -->
-<!-- TODO:  Добавить стили метки для переключения языка -->
+<!-- TODO: Добавить стили метки для переключения языка -->
 <!-- TODO: После того как перемещаю и потом ставлю статус завершенный у перемещнной карточки то изменяется не та -->
 <!-- TODO: Уведомление не работает если нажимаю на кнопку изменить позицию в начало -->
 <!-- TODO: Выложить на Vercel -->
@@ -16,6 +16,9 @@ import NoticeDialog from 'components/ui/NoticeDialog.vue';
 import { ELEMENTS_ON_PAGE } from 'src/constants';
 import draggable from 'vuedraggable';
 import { useTaskAction } from 'src/composables/useTaskAction';
+
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 const store = useTasksStore();
 const { executeTaskAction } = useTaskAction();
@@ -74,7 +77,7 @@ defineOptions({
 <template>
   <q-page>
     <div class="row justify-center q-pt-lg">
-      <div class="col-12 col-md-4 col-lg-3">
+      <div class="col-12 col-md-5 col-lg-3">
         <add-task />
       </div>
       <div class="col-12 col-md-5 col-lg-4">
@@ -103,12 +106,11 @@ defineOptions({
                   :max="totalPages"
                   direction-links
                   flat
-                  color="grey"
-                  active-color="primary"
+                  active-color="cyan"
                 />
               </div>
             </template>
-            <error-block v-else icon="today" text="No tasks found..." />
+            <error-block v-else icon="today" :text="t('noTasksFound')" />
           </template>
         </div>
       </div>

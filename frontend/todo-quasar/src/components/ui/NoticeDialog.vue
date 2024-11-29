@@ -13,7 +13,7 @@ const store = useTasksStore(),
     <div v-if="noticeData" style="width: 700px; max-width: 80vw">
       <q-card>
         <q-card-section class="dialog-title-bar text-white">
-          <div class="text-h6">Completed</div>
+          <div class="text-h6">{{ $t('taskCompleted') }}</div>
         </q-card-section>
         <q-card-section>
           <q-list bordered separator>
@@ -21,7 +21,7 @@ const store = useTasksStore(),
               <q-item-section>
                 <div class="row items-center">
                   <div class="col-4 col-md-2">
-                    <q-badge outline align="middle" color="primary">ID</q-badge>
+                    <q-badge outline align="middle" color="primary">{{ $t('id') }}</q-badge>
                   </div>
                   <div class="col-md">
                     <div class="text-h6">{{ noticeData.id }}</div>
@@ -34,7 +34,7 @@ const store = useTasksStore(),
                 <div class="row items-center">
                   <div class="col-4 col-md-2">
                     <q-badge outline align="middle" color="orange"
-                      >TODO</q-badge
+                      >{{ $t('todo') }}</q-badge
                     >
                   </div>
                   <div class="col-md">
@@ -48,7 +48,7 @@ const store = useTasksStore(),
                 <div class="row items-center">
                   <div class="col-4 col-md-2">
                     <q-badge outline align="middle" color="secondary"
-                      >DATE</q-badge
+                      >{{ $t('date') }}</q-badge
                     >
                   </div>
                   <div class="col-md">
@@ -68,7 +68,7 @@ const store = useTasksStore(),
             size="md"
             outline
             color="secondary"
-            label="Close"
+            :label="$t('close')"
             @click="store.resetIsNotice"
           />
         </div>

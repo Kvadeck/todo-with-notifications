@@ -3,7 +3,9 @@ import { errorMessage, nowDateOrTime } from 'src/utils/main';
 import { useTasksStore } from 'stores/tasks';
 import { useTaskAction } from 'src/composables/useTaskAction';
 import { ref } from 'vue';
-import { ErrorMessage } from 'src/models/errorMessage';
+
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 const { executeTaskAction } = useTaskAction(),
   task_name = ref(''),
@@ -25,15 +27,15 @@ function validateTaskInput(): boolean {
   const now = new Date();
 
   if (selectedDateTime && selectedDateTime < now) {
-    errorMessage(ErrorMessage.dateInFuture);
+    errorMessage(t('dateInFuture'));
     return false;
   }
   if (!time.value || !date.value) {
-    errorMessage(ErrorMessage.dateNotSelected);
+    errorMessage(t('dateNotSelected'));
     return false;
   }
   if (!category.value.length) {
-    errorMessage(ErrorMessage.selectCategory);
+    errorMessage(t('selectCategory'));
     return false;
   }
   return true;
@@ -64,34 +66,34 @@ function onReset() {
   <div class="q-px-sm row items-start">
     <q-card class="form-card">
       <q-card-section>
-        <div class="text-h6 q-pb-md">Write your task:</div>
+        <div class="text-h6 q-pb-md">{{ $t('writeYourTask') }}:</div>
         <q-form @submit.prevent="onSubmit" @reset="onReset">
           <q-input
             v-model="task_name"
             outlined
-            label="Decide what it is you planing to do"
+            :label="t('decideWhatItIsYouPlaningToDo')"
             lazy-rules
             :rules="[
-              (val) => (val && val.length > 0) || 'Please input your task',
+              (val) => (val && val.length > 0) || t('pleaseInputYourTask'),
             ]"
           />
-          <div class="text-h6 q-py-xs">Category:</div>
+          <div class="text-h6 q-py-xs">{{ $t('category') }}:</div>
           <div class="q-pb-xs">
             <q-toggle
               v-model="category"
-              label="Life"
+              :label="t('life')"
               color="orange"
               val="life"
             />
-            <q-toggle v-model="category" label="Work" color="red" val="work" />
+            <q-toggle v-model="category" :label="t('work')" color="red" val="work" />
             <q-toggle
               v-model="category"
               color="cyan"
-              label="Family"
+              :label="t('family')"
               val="family"
             />
           </div>
-          <div class="text-h6 q-py-xs">Notice time:</div>
+          <div class="text-h6 q-py-xs">{{ $t('noticeTime') }}:</div>
           <div class="q-pb-md">
             <div class="row">
               <div class="col-6 q-pr-xs">
@@ -106,13 +108,13 @@ function onReset() {
             <q-btn
               unelevated
               rounded
-              label="Add task"
+              :label="t('addTask')"
               type="submit"
               color="secondary"
             />
             <q-btn
               class="q-ml-sm"
-              label="Reset"
+              :label="t('reset')"
               type="reset"
               color="secondary"
               flat

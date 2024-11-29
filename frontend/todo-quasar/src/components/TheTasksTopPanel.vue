@@ -2,8 +2,8 @@
 import { useTasksStore } from 'stores/tasks';
 import { computed } from 'vue';
 import { deleteMessage, errorMessage } from 'src/utils/main';
-import { ErrorMessage } from 'src/models/errorMessage';
-import { StatusMessage } from 'src/models/statusMessage';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 const store = useTasksStore(),
   selectedTasks = computed(() => store.selectedTasks);
@@ -15,15 +15,13 @@ function loadSelectedTasks(): void {
 
 function deleteSelectedTasks() {
   store.reset();
-
   if (!selectedTasks.value.length) {
-    errorMessage(ErrorMessage.selectOneTask);
+    errorMessage(t('selectOneTask'));
     return;
   }
 
   store.preDeleteSelectedTasks(selectedTasks.value);
-
-  deleteMessage(StatusMessage.selectedDeleted, loadSelectedTasks, () => {
+  deleteMessage(t('selectedDeleted'), loadSelectedTasks, () => {
     store.deleteSelectedTasks(selectedTasks.value);
   });
 }
@@ -42,14 +40,14 @@ function refreshTasks() {
           @click="refreshTasks"
           outline
           rounded
-          :label="$t('failed')"
+          :label="$t('refresh')"
           color="secondary"
         />
         <q-btn
           unelevated
           @click="deleteSelectedTasks"
           rounded
-          label="Delete selected"
+          :label="$t('deleteSelected')"
           color="secondary"
         />
       </div>

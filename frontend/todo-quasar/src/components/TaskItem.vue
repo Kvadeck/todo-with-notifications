@@ -5,8 +5,10 @@ import { useTaskAction } from 'src/composables/useTaskAction';
 import { computed, ref } from 'vue';
 import { date } from 'quasar';
 import { deleteMessage } from 'src/utils/main';
-import { StatusMessage } from 'src/models/statusMessage';
 const store = useTasksStore();
+
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 interface Props {
   task: Task;
@@ -21,7 +23,7 @@ const { executeTaskAction } = useTaskAction(),
   },
   checked = ref(false),
   markedText = computed(() => {
-    return props.task.completed ? 'uncompleted' : 'completed';
+    return props.task.completed ? t('uncompleted') : t('completed');
   }),
   completedBorder = computed(() =>
     props.task.completed ? 'completed-border' : 'uncompleted-border',
@@ -36,7 +38,7 @@ function pinTask(task: Task) {
 
 function deleteTask(id: number) {
   store.preDeleteTask(id);
-  deleteMessage(StatusMessage.taskDeleted + id, store.loadTasks, () => {
+  deleteMessage(t('taskDeleted') + id, store.loadTasks, () => {
     store.deleteTask(id);
   });
 }
@@ -52,7 +54,7 @@ function deleteTask(id: number) {
         name="fa-solid fa-thumbtack"
         @click="pinTask(task)"
       >
-        <q-tooltip :delay="500" :offset="[0, 10]">Pin to first page</q-tooltip>
+        <q-tooltip :delay="500" :offset="[0, 10]">{{ $t('pinToFirstPage') }}</q-tooltip>
       </q-icon>
       <q-card-section>
         <div class="task-card-inner">
@@ -89,7 +91,7 @@ function deleteTask(id: number) {
                         "
                       >
                         <q-item-section>
-                          Mark as {{ markedText }}
+                         {{ $t('markAs') }} {{ markedText }}
                         </q-item-section>
                       </q-item>
                       <q-item
@@ -97,7 +99,7 @@ function deleteTask(id: number) {
                         @click="deleteTask(task.id)"
                         clickable
                       >
-                        <q-item-section>Remove Task</q-item-section>
+                        <q-item-section>{{ $t('removeTask') }}</q-item-section>
                       </q-item>
                     </q-list>
                   </q-menu>

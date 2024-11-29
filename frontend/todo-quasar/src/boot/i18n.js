@@ -1,14 +1,7 @@
-import { createI18n } from 'vue-i18n';
-import messages from 'src/i18n';
+import { boot } from 'quasar/wrappers';
+import i18n from '../plugins/i18n';
 
-export default ({ app }) => {
-  // Create I18n instance
-  const i18n = createI18n({
-    locale: 'en-US',
-    legacy: false, // comment this out if not using Composition API
-    messages,
-  });
-
-  // Tell app to use the I18n instance
+export default boot(({ app }) => {
   app.use(i18n);
-};
+  app.config.globalProperties.$t = i18n.global.t;
+});
