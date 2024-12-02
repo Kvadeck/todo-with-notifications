@@ -12,7 +12,11 @@ export const useTasksStore = defineStore('tasks', {
     tasks: [] as Task[],
     selectedTasks: [] as number[],
     isNotice: null as boolean | null,
-    noticeData: null as Task | null,
+    noticeData: null as {
+      id: number | undefined;
+      taskName: string;
+      date: Date;
+    } | null,
     onDialogClose: null as (() => void) | null,
   }),
   getters: {
@@ -127,7 +131,12 @@ export const useTasksStore = defineStore('tasks', {
     },
     async showDialogForTask(task: Task): Promise<void> {
       this.isNotice = true;
-      this.noticeData = task;
+
+      this.noticeData = {
+        id: task.id,
+        taskName: task.taskName,
+        date: task.date,
+      };
 
       return new Promise((resolve) => {
         this.onDialogClose = resolve;

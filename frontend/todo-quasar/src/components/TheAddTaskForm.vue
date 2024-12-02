@@ -85,7 +85,12 @@ function onReset() {
               color="orange"
               val="life"
             />
-            <q-toggle v-model="category" :label="t('work')" color="red" val="work" />
+            <q-toggle
+              v-model="category"
+              :label="t('work')"
+              color="red"
+              val="work"
+            />
             <q-toggle
               v-model="category"
               color="cyan"

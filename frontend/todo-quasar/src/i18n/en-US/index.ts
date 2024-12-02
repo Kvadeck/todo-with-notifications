@@ -28,10 +28,10 @@ export default {
   todo: 'Todo',
   date: 'Date',
   close: 'Close',
-  uncompleted:'uncompleted',
-  completed:'completed',
+  uncompleted: 'uncompleted',
+  completed: 'completed',
   pinToFirstPage: 'Pin to first page',
-  markAs:'Mark as',
+  markAs: 'Mark as',
   removeTask: 'Remove Task',
   writeYourTask: 'Write your task',
   decideWhatItIsYouPlaningToDo: 'Decide what it is you planing to do',
@@ -43,5 +43,5 @@ export default {
   noticeTime: 'Notice time',
   addTask: 'Add task',
   reset: 'Reset',
-  noTasksFound: 'No tasks found...'
+  noTasksFound: 'No tasks found...',
 };

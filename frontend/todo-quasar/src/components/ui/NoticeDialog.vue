@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { date } from 'quasar';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useTasksStore } from 'stores/tasks';
+
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 const store = useTasksStore(),
   noticeData = computed(() => store.noticeData),
-  isNotice = computed(() => store.isNotice);
+  isNotice = computed(() => store.isNotice),
+  colors = ref(['primary', 'orange', 'secondary']),
+  labels = computed(() => [t('id'), t('todo'), t('date')]);
 </script>
 
 <template>
@@ -17,43 +22,21 @@ const store = useTasksStore(),
         </q-card-section>
         <q-card-section>
           <q-list bordered separator>
-            <q-item v-ripple>
+            <q-item v-for="(_, key, index) in noticeData" v-ripple :key="index">
               <q-item-section>
                 <div class="row items-center">
                   <div class="col-4 col-md-2">
-                    <q-badge outline align="middle" color="primary">{{ $t('id') }}</q-badge>
-                  </div>
-                  <div class="col-md">
-                    <div class="text-h6">{{ noticeData.id }}</div>
-                  </div>
-                </div>
-              </q-item-section>
-            </q-item>
-            <q-item v-ripple>
-              <q-item-section>
-                <div class="row items-center">
-                  <div class="col-4 col-md-2">
-                    <q-badge outline align="middle" color="orange"
-                      >{{ $t('todo') }}</q-badge
-                    >
-                  </div>
-                  <div class="col-md">
-                    <div class="text-h6">{{ noticeData.taskName }}</div>
-                  </div>
-                </div>
-              </q-item-section>
-            </q-item>
-            <q-item v-ripple>
-              <q-item-section>
-                <div class="row items-center">
-                  <div class="col-4 col-md-2">
-                    <q-badge outline align="middle" color="secondary"
-                      >{{ $t('date') }}</q-badge
-                    >
+                    <q-badge outline align="middle" :color="colors[index]">
+                      {{ labels[index] }}
+                    </q-badge>
                   </div>
                   <div class="col-md">
                     <div class="text-h6">
-                      {{ date.formatDate(noticeData.date, 'DD.MM.YYYY HH:mm') }}
+                      {{
+                        key === 'date'
+                          ? date.formatDate(noticeData[key], 'DD.MM.YYYY HH:mm')
+                          : noticeData[key]
+                      }}
                     </div>
                   </div>
                 </div>

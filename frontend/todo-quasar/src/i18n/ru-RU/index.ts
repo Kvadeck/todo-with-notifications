@@ -29,10 +29,10 @@ export default {
   todo: 'Задача',
   date: 'Дата',
   close: 'Закрыть',
-  uncompleted:'незавершенная',
-  completed:'завершенная',
+  uncompleted: 'незавершенная',
+  completed: 'завершенная',
   pinToFirstPage: 'Закрепить на первой странице',
-  markAs:'Пометить как',
+  markAs: 'Пометить как',
   removeTask: 'Удалить задачу',
   writeYourTask: 'Напишите свою задачу',
   decideWhatItIsYouPlaningToDo: 'Решите что вы будете делать',
@@ -44,5 +44,5 @@ export default {
   noticeTime: 'Время уведомления',
   addTask: 'Добавить задачу',
   reset: 'Сброс',
-  noTasksFound: 'Задачи не найдены...'
+  noTasksFound: 'Задачи не найдены...',
 };

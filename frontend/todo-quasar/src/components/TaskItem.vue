@@ -54,7 +54,9 @@ function deleteTask(id: number) {
         name="fa-solid fa-thumbtack"
         @click="pinTask(task)"
       >
-        <q-tooltip :delay="500" :offset="[0, 10]">{{ $t('pinToFirstPage') }}</q-tooltip>
+        <q-tooltip :delay="500" :offset="[0, 10]">{{
+          $t('pinToFirstPage')
+        }}</q-tooltip>
       </q-icon>
       <q-card-section>
         <div class="task-card-inner">
@@ -91,7 +93,7 @@ function deleteTask(id: number) {
                         "
                       >
                         <q-item-section>
-                         {{ $t('markAs') }} {{ markedText }}
+                          {{ $t('markAs') }} {{ markedText }}
                         </q-item-section>
                       </q-item>
                       <q-item

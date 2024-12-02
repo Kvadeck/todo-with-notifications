@@ -4,7 +4,6 @@ import { errorMessage, successMessage } from 'src/utils/main';
 import { Task } from 'src/services/db';
 import { useI18n } from 'vue-i18n';
 
-
 type param =
   | { newTasks: Task[]; startValue: number }
   | Task
@@ -14,7 +13,6 @@ type param =
   | { taskName: string; category: string[]; date: Date };
 
 export function useTaskAction() {
-
   const { t } = useI18n();
 
   const store = useTasksStore(),
@@ -39,8 +37,7 @@ export function useTaskAction() {
         successMessage(status.value);
       }
     } catch (err) {
-      const error =
-        err instanceof Error ? err.message : t('unknownError');
+      const error = err instanceof Error ? err.message : t('unknownError');
       errorMessage(error);
     }
   }
