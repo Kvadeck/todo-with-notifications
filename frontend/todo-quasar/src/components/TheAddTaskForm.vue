@@ -102,10 +102,10 @@ function onReset() {
           <div class="q-pb-md">
             <div class="row">
               <div class="col-6 q-pr-xs">
-                <q-input v-model="date" outlined type="date" />
+                <q-input class="date-input add-input" v-model="date" outlined type="date" />
               </div>
               <div class="col-6 q-pl-xs">
-                <q-input v-model="time" outlined type="time" />
+                <q-input class="time-input add-input" v-model="time" outlined type="time" />
               </div>
             </div>
           </div>

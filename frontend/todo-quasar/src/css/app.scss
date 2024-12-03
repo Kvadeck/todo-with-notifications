@@ -56,3 +56,25 @@
   width: 700px;
   max-width: 80vw;
 }
+.body--dark .add-input input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: relative;
+}
+.body--dark .add-input input::after {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-family: "Font Awesome 5 Free";
+  font-size: 12px;
+  color: white;
+}
+.body--dark .time-input input::after {
+  content: "\f017";
+}
+.body--dark .date-input input::after {
+  content: "\f133";
+}
