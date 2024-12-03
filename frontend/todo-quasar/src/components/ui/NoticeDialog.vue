@@ -9,13 +9,13 @@ const { t } = useI18n();
 const store = useTasksStore(),
   noticeData = computed(() => store.noticeData),
   isNotice = computed(() => store.isNotice),
-  colors = ref(['primary', 'orange', 'secondary']),
+  colors = ref<string[]>(['primary', 'orange', 'secondary']),
   labels = computed(() => [t('id'), t('todo'), t('date')]);
 </script>
 
 <template>
   <q-dialog v-model="isNotice">
-    <div v-if="noticeData" style="width: 700px; max-width: 80vw">
+    <div class="notice-wrapper" v-if="noticeData">
       <q-card>
         <q-card-section class="dialog-title-bar text-white">
           <div class="text-h6">{{ $t('taskCompleted') }}</div>

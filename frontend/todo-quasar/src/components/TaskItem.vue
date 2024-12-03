@@ -131,7 +131,7 @@ function deleteTask(id: number) {
           <q-badge
             outline
             color="primary"
-            :label="date.formatDate(task.date, 'DD.MM.YYYY')"
+            :label="date.formatDate(task.date, 'DD.MM.YY')"
           />
         </div>
       </div>

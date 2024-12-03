@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
 import { db, Task } from '../services/db';
-import { StatusMessage } from 'src/models/statusMessage';
-import { ErrorMessage } from 'src/models/errorMessage';
 import { ELEMENTS_ON_PAGE } from 'src/constants';
+
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 export const useTasksStore = defineStore('tasks', {
   state: () => ({
@@ -34,16 +35,16 @@ export const useTasksStore = defineStore('tasks', {
   actions: {
     async addTask(data: Task) {
       if (data == null) {
-        this.error = ErrorMessage.failedAdd;
+        this.error = t('failedAdd');
         return;
       }
       try {
         await db.transaction('rw', db.tasks, async () => {
           const id = await db.tasks.add({ ...data, completed: false });
-          this.status = StatusMessage.taskAdded + id;
+          this.status = t('taskAdded') + id;
         });
       } catch (error) {
-        this.error = ErrorMessage.failedAdd + ' ' + error;
+        this.error = t('failedAdd') + ' ' + error;
       }
     },
     async loadTasks() {
@@ -53,14 +54,14 @@ export const useTasksStore = defineStore('tasks', {
           this.tasks = await db.tasks.orderBy('id').toArray();
         });
       } catch (error) {
-        this.error = ErrorMessage.failedLoad + ' ' + error;
+        this.error = t('failedLoad') + ' ' + error;
       } finally {
         this.isLoading = false;
       }
     },
     async deleteTask(id: number) {
       if (id == null) {
-        this.error = ErrorMessage.failedDelete;
+        this.error = t('failedDelete');
         return;
       }
       try {
@@ -68,12 +69,12 @@ export const useTasksStore = defineStore('tasks', {
           await db.tasks.delete(id);
         });
       } catch (error) {
-        this.error = ErrorMessage.failedDelete + ' ' + error;
+        this.error = t('failedDelete') + ' ' + error;
       }
     },
     async deleteSelectedTasks(tasksIds: number[]) {
       if (tasksIds == null) {
-        this.error = ErrorMessage.failedDeleteSelected;
+        this.error = t('failedDeleteSelected');
         return;
       }
       try {
@@ -82,25 +83,25 @@ export const useTasksStore = defineStore('tasks', {
         });
         this.resetSelectedTasks();
       } catch (error) {
-        this.error = ErrorMessage.failedDeleteSelected + ' ' + error;
+        this.error = t('failedDeleteSelected') + ' ' + error;
       }
     },
     async toggleCompleted(id: number) {
       if (id == null) {
-        this.error = ErrorMessage.failedToggleCompleted;
+        this.error = t('failedToggleCompleted');
         return;
       }
       try {
         await db.transaction('rw', db.tasks, async () => {
           const task = await db.tasks.get(id);
           if (!task) {
-            throw new Error(ErrorMessage.notExist);
+            throw new Error(t('notExist'));
           }
           await db.tasks.update(id, { completed: !task.completed });
         });
-        this.status = StatusMessage.taskUpdated;
+        this.status = t('taskUpdated');
       } catch (error) {
-        this.error = `${ErrorMessage.failedToggleCompleted} ${error}`;
+        this.error = `${t('failedToggleCompleted')} ${error}`;
       }
     },
     async checkNoticeTime() {
@@ -114,7 +115,7 @@ export const useTasksStore = defineStore('tasks', {
           if (taskTimeISO === nowISO) {
             const task = await db.tasks.get(taskItem.id);
             if (task == null) {
-              this.error = ErrorMessage.notExist;
+              this.error = t('notExist');
               return;
             }
             await db.transaction('rw', db.tasks, async () => {
@@ -125,7 +126,7 @@ export const useTasksStore = defineStore('tasks', {
           }
         }
       } catch (error) {
-        this.error = ErrorMessage.notExist + ' ' + error;
+        this.error = t('notExist') + ' ' + error;
         return;
       }
     },
@@ -158,7 +159,7 @@ export const useTasksStore = defineStore('tasks', {
           await Promise.all(taskPromises);
         });
       } catch (error) {
-        this.error = ErrorMessage.failedRefresh + ' ' + error;
+        this.error = t('failedRefresh') + ' ' + error;
       }
     },
     async updatePosition(tasks: { newTasks: Task[]; startValue: number }) {
@@ -167,7 +168,7 @@ export const useTasksStore = defineStore('tasks', {
         tasks.newTasks.length === 0 ||
         tasks.startValue == null
       ) {
-        this.error = ErrorMessage.failedUpdatePosition;
+        this.error = t('failedUpdatePosition');
         return;
       }
       try {
@@ -177,23 +178,23 @@ export const useTasksStore = defineStore('tasks', {
           ...tasks.newTasks,
         );
         await this.refreshDbTasks(this.tasks);
-        this.status = StatusMessage.taskMoved;
+        this.status = t('taskMoved');
       } catch (error) {
-        this.error = ErrorMessage.failedUpdatePosition + ' ' + error;
+        this.error = t('failedUpdatePosition') + ' ' + error;
       }
     },
     async pinTask(task: Task) {
       if (task == null) {
-        this.error = ErrorMessage.failedPinTask;
+        this.error = t('failedPinTask');
         return;
       }
       try {
         this.tasks = this.tasks.filter((item) => item.id !== task.id);
         this.tasks.unshift({ ...task });
         await this.refreshDbTasks(this.tasks);
-        this.status = StatusMessage.taskPinned;
+        this.status = t('taskPinned');
       } catch (error) {
-        this.error = ErrorMessage.failedPinTask + ' ' + error;
+        this.error = t('failedPinTask') + ' ' + error;
       }
     },
     reset() {
@@ -202,7 +203,7 @@ export const useTasksStore = defineStore('tasks', {
     },
     addSelectedTask(id: number | undefined) {
       if (id == null) {
-        this.error = ErrorMessage.failedAddSelected;
+        this.error = t('failedAddSelected');
         return;
       }
       if (this.selectedTasks.includes(id)) {
@@ -225,14 +226,14 @@ export const useTasksStore = defineStore('tasks', {
     },
     preDeleteTask(id: number) {
       if (id == null) {
-        this.error = ErrorMessage.failedDelete;
+        this.error = t('failedDelete');
         return;
       }
       this.tasks = this.tasks = this.tasks.filter((item) => item.id !== id);
     },
     preDeleteSelectedTasks(tasksIds: number[]) {
       if (tasksIds == null) {
-        this.error = ErrorMessage.failedDeleteSelected;
+        this.error = t('failedDeleteSelected');
         return;
       }
       tasksIds.forEach((taskId) => {
