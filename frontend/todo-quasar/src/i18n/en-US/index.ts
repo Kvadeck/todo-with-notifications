@@ -44,4 +44,5 @@ export default {
   addTask: 'Add task',
   reset: 'Reset',
   noTasksFound: 'No tasks found...',
+  recover: 'Recover',
 };

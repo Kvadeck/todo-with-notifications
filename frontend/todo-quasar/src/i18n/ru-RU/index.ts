@@ -45,4 +45,5 @@ export default {
   addTask: 'Добавить задачу',
   reset: 'Сброс',
   noTasksFound: 'Задачи не найдены...',
+  recover: 'Восстановить',
 };

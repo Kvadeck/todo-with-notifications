@@ -1,6 +1,11 @@
 import { date } from 'quasar';
 import { Notify } from 'quasar';
 import { DELETE_MESSAGE_DURATION } from 'src/constants';
+import i18n from '../plugins/i18n';
+
+export function t(key: string): string {
+  return i18n.global.t(key);
+}
 
 export function nowDateOrTime(value: 'time' | 'date'): string | undefined {
   const timeStamp = Date.now();
@@ -59,7 +64,7 @@ export function deleteMessage(
     message: message,
     progress: true,
     timeout: DELETE_MESSAGE_DURATION,
-    actions: [{ label: 'Recover', color: 'white', handler: handleAction }],
+    actions: [{ label: t('recover'), color: 'white', handler: handleAction }],
   });
 }
 
