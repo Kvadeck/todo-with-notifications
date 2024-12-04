@@ -33,7 +33,7 @@ const { executeTaskAction } = useTaskAction(),
   });
 
 function pinTask(task: Task) {
-  executeTaskAction(store.pinTask, task);
+  executeTaskAction(store.pinTask, task, true);
 }
 
 function deleteTask(id: number) {

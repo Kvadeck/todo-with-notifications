@@ -1,4 +1,3 @@
-<!-- TODO: После того как перемещаю и потом ставлю статус завершенный у перемещнной карточки то изменяется не та -->
 <!-- TODO: Уведомление не работает если нажимаю на кнопку изменить позицию в начало -->
 
 <script setup lang="ts">
@@ -58,7 +57,7 @@ const paginatedItems = computed({
     executeTaskAction(store.updatePosition, {
       newTasks,
       startValue: start.value,
-    });
+    },true);
   },
 });
 
