@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import HeaderIcon from 'components/ui/HeaderIcon.vue';
+import HeaderIcon from 'components/ui/BaseHeaderIcon.vue';
 import { useQuasar } from 'quasar';
 import { computed, ref, watch } from 'vue';
 import { getLocalStorage, setLocalStorage } from 'src/utils/main';

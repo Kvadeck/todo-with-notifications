@@ -1,14 +1,12 @@
-<!-- TODO: Уведомление не работает если нажимаю на кнопку изменить позицию в начало -->
-
 <script setup lang="ts">
 import { useTasksStore } from 'stores/tasks';
 import { computed, onMounted, ref, watch } from 'vue';
 import TaskCard from 'components/TaskItem.vue';
 import AddTask from 'components/TheAddTaskForm.vue';
 import TasksControls from 'components/TheTasksTopPanel.vue';
-import ErrorBlock from 'components/ui/ErrorBlock.vue';
-import Spinner from 'components/ui/LSpinner.vue';
-import NoticeDialog from 'components/ui/NoticeDialog.vue';
+import BaseError from 'components/ui/BaseError.vue';
+import Spinner from 'components/ui/BaseSpinner.vue';
+import NoticeDialog from 'components/NoticeDialog.vue';
 import { ELEMENTS_ON_PAGE } from 'src/constants';
 import draggable from 'vuedraggable';
 import { useTaskAction } from 'src/composables/useTaskAction';
@@ -83,7 +81,7 @@ defineOptions({
       <div class="col-12 col-md-5 col-lg-4">
         <div class="q-px-sm q-mt-lg q-mt-md-none">
           <tasks-controls />
-          <error-block v-if="error" icon="error" :text="error" />
+          <base-error v-if="error" icon="error" :text="error" />
           <spinner v-else-if="isLoading" />
           <template v-else>
             <template v-if="tasks?.length">
@@ -110,7 +108,7 @@ defineOptions({
                 />
               </div>
             </template>
-            <error-block v-else icon="today" :text="t('noTasksFound')" />
+            <base-error v-else icon="today" :text="t('noTasksFound')" />
           </template>
         </div>
       </div>
