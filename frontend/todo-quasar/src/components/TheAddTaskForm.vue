@@ -102,10 +102,20 @@ function onReset() {
           <div class="q-pb-md">
             <div class="row">
               <div class="col-6 q-pr-xs">
-                <q-input class="date-input add-input" v-model="date" outlined type="date" />
+                <q-input
+                  class="date-input add-input"
+                  v-model="date"
+                  outlined
+                  type="date"
+                />
               </div>
               <div class="col-6 q-pl-xs">
-                <q-input class="time-input add-input" v-model="time" outlined type="time" />
+                <q-input
+                  class="time-input add-input"
+                  v-model="time"
+                  outlined
+                  type="time"
+                />
               </div>
             </div>
           </div>
@@ -130,3 +140,29 @@ function onReset() {
     </q-card>
   </div>
 </template>
+<style scoped>
+.form-card {
+  width: 100%;
+}
+.add-input :deep() input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: relative;
+}
+.add-input :deep() input::after {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-family: 'Font Awesome 5 Free', serif;
+  font-size: 12px;
+}
+.time-input :deep() input::after {
+  content: '\f017';
+}
+.date-input :deep() input::after {
+  content: '\f133';
+}
+</style>

@@ -138,3 +138,28 @@ function deleteTask(id: number) {
     </q-card>
   </div>
 </template>
+<style scoped>
+.task-card-inner {
+  display: grid;
+  grid-template-columns: 50px 1fr 0;
+  align-items: center;
+}
+.completed-border {
+  border-left: 2px solid #ef6c00;
+}
+.uncompleted-border {
+  border-left: 2px solid var(--q-positive);
+}
+.completed {
+  opacity: 0.5;
+}
+.pin-icon {
+  right: 5px;
+  top: 7px;
+  z-index: 10;
+  cursor: pointer;
+}
+.move-icon {
+  cursor: move;
+}
+</style>

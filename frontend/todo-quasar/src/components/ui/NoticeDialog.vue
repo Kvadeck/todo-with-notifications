@@ -59,3 +59,9 @@ const store = useTasksStore(),
     </div>
   </q-dialog>
 </template>
+<style scoped>
+.notice-wrapper {
+  width: 700px;
+  max-width: 80vw;
+}
+</style>

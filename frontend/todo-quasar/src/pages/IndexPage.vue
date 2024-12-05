@@ -54,10 +54,14 @@ const paginatedItems = computed({
       : tasks.value.slice(start.value, end);
   },
   set(newTasks) {
-    executeTaskAction(store.updatePosition, {
-      newTasks,
-      startValue: start.value,
-    },true);
+    executeTaskAction(
+      store.updatePosition,
+      {
+        newTasks,
+        startValue: start.value,
+      },
+      true,
+    );
   },
 });
 

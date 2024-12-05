@@ -14,68 +14,14 @@
 .body--dark .dialog-title-bar {
   background: #000000;
 }
-
 .body--light .dialog-title-bar {
   background: #1976d2;
 }
-
 .body--dark .side-wrapper {
   background: #1d1d1d;
 }
-
-.task-card-inner {
-  display: grid;
-  grid-template-columns: 50px 1fr 0;
-  align-items: center;
-}
-.form-card {
-  width: 100%;
-}
-.completed {
-  opacity: 0.5;
-}
-.completed-border {
-  border-left: 2px solid #ef6c00;
-}
-.uncompleted-border {
-  border-left: 2px solid var(--q-positive);
-}
-.pin-icon {
-  right: 5px;
-  top: 7px;
-  z-index: 10;
-  cursor: pointer;
-}
-.move-icon {
-  cursor: move;
-}
 .body--dark header {
   background: #000;
-}
-.notice-wrapper {
-  width: 700px;
-  max-width: 80vw;
-}
-.add-input input {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  position: relative;
-}
-.add-input input::after {
-  position: absolute;
-  right: 4px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  font-family: "Font Awesome 5 Free";
-  font-size: 12px;
-}
-.time-input input::after {
-  content: "\f017";
-}
-.date-input input::after {
-  content: "\f133";
 }
 .body--dark .add-input input::after {
   color: white;
